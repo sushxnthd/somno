@@ -1,0 +1,324 @@
+/* Motion layer for the Somno website */
+
+.site-header {
+  will-change: transform, background, border-color, box-shadow;
+  transition: transform .42s cubic-bezier(.22,.8,.24,1), background .28s ease, border-color .28s ease, box-shadow .28s ease !important;
+}
+
+.site-header.header-hidden {
+  transform: translateY(calc(-100% - 8px));
+}
+
+.site-header.header-visible.scrolled {
+  box-shadow: 0 14px 40px rgba(0,0,0,.18);
+}
+
+.scroll-progress {
+  position: fixed;
+  inset: 0 auto auto 0;
+  z-index: 80;
+  width: 100%;
+  height: 2px;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--violet-2), var(--violet), var(--cyan));
+  pointer-events: none;
+  will-change: transform;
+}
+
+.ambient-one {
+  animation: ambientDriftOne 14s ease-in-out infinite alternate;
+}
+
+.ambient-two {
+  animation: ambientDriftTwo 17s ease-in-out infinite alternate;
+}
+
+.status-dot {
+  animation: statusPulse 2.4s ease-out infinite;
+}
+
+.hero-visual::before {
+  animation: heroGlow 6s ease-in-out infinite alternate;
+}
+
+.phone-front,
+.phone-back,
+.signal-card,
+.signal-tile,
+.science-card,
+.impact-card,
+.architecture-card,
+.fusion-panel,
+.cta-card {
+  will-change: transform;
+}
+
+.phone-front {
+  transform: translate3d(var(--hero-x, 0px), var(--hero-y, 0px), 0) rotate(-4deg);
+  animation: phoneFloatFront 6.2s ease-in-out infinite;
+}
+
+.phone-back {
+  transform: translate3d(calc(var(--hero-x, 0px) * -.45), calc(var(--hero-y, 0px) * -.55), 0) rotate(6deg);
+  animation: phoneFloatBack 7.4s ease-in-out infinite;
+}
+
+.signal-card-one {
+  animation: cardFloatOne 4.8s ease-in-out infinite;
+}
+
+.signal-card-two {
+  animation: cardFloatTwo 5.4s ease-in-out infinite;
+}
+
+.signal-tile,
+.science-card,
+.impact-card {
+  transition: transform .32s cubic-bezier(.2,.8,.2,1), border-color .32s ease, background .32s ease, box-shadow .32s ease !important;
+}
+
+.signal-tile:hover,
+.science-card:hover,
+.impact-card:hover {
+  transform: translateY(-7px);
+  border-color: rgba(154,135,255,.25);
+  background: linear-gradient(180deg, rgba(154,135,255,.075), rgba(255,255,255,.024));
+  box-shadow: 0 22px 55px rgba(0,0,0,.18);
+}
+
+.signal-tile:hover .icon-chip,
+.impact-card:hover .impact-icon {
+  transform: scale(1.08) rotate(-3deg);
+}
+
+.icon-chip,
+.impact-icon {
+  transition: transform .32s cubic-bezier(.2,.8,.2,1), box-shadow .32s ease;
+}
+
+.architecture-card:hover .architecture-visual img {
+  transform: scale(1.012);
+  border-color: rgba(154,135,255,.18);
+}
+
+.architecture-visual img {
+  transition: transform .7s cubic-bezier(.2,.8,.2,1), border-color .3s ease;
+}
+
+.inline-link span {
+  display: inline-block;
+  transition: transform .22s ease;
+}
+
+.inline-link:hover span {
+  transform: translateX(5px);
+}
+
+.bar i {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 1.05s cubic-bezier(.2,.8,.2,1);
+}
+
+.fusion-panel.visible .bar i {
+  transform: scaleX(1);
+}
+
+.weight-row:nth-child(2) .bar i { transition-delay: .10s; }
+.weight-row:nth-child(3) .bar i { transition-delay: .20s; }
+.weight-row:nth-child(4) .bar i { transition-delay: .30s; }
+
+.feature-line {
+  position: relative;
+}
+
+.feature-line::before {
+  content: "";
+  position: absolute;
+  left: -18px;
+  top: 18px;
+  bottom: 18px;
+  width: 2px;
+  border-radius: 999px;
+  background: linear-gradient(var(--violet), var(--cyan));
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform .28s ease;
+}
+
+.feature-line.active::before {
+  transform: scaleY(1);
+}
+
+.single-phone {
+  transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s ease;
+}
+
+.product-showcase:hover .single-phone {
+  transform: rotate(0deg) translateY(-6px);
+  box-shadow: 0 38px 90px rgba(0,0,0,.42);
+}
+
+#feature-screen {
+  transform-origin: center;
+}
+
+#feature-screen.screen-enter {
+  animation: screenEnter .48s cubic-bezier(.2,.8,.2,1);
+}
+
+.privacy-orbit {
+  animation: orbitBreath 6s ease-in-out infinite;
+}
+
+.privacy-core {
+  animation: corePulse 4.5s ease-in-out infinite;
+}
+
+.orbit-item {
+  animation: orbitItemFloat 4s ease-in-out infinite;
+}
+
+.orbit-b { animation-delay: -.8s; }
+.orbit-c { animation-delay: -1.7s; }
+.orbit-d { animation-delay: -2.5s; }
+
+.trust-grid span {
+  transition: color .25s ease, transform .25s ease;
+}
+
+.trust-grid span:hover {
+  color: #c9c3d5;
+  transform: translateY(-2px);
+}
+
+.button {
+  position: relative;
+  overflow: hidden;
+}
+
+.button::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,.20) 45%, transparent 70%);
+  transform: translateX(-130%);
+  transition: transform .7s ease;
+  pointer-events: none;
+}
+
+.button:hover::after {
+  transform: translateX(130%);
+}
+
+.reveal {
+  filter: blur(3px);
+  transition: opacity .72s ease, transform .72s cubic-bezier(.2,.8,.2,1), filter .72s ease !important;
+}
+
+.reveal.visible {
+  filter: blur(0);
+}
+
+.section-heading.visible .kicker {
+  animation: kickerIn .55s cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes ambientDriftOne {
+  from { transform: translate3d(0,0,0) scale(1); }
+  to { transform: translate3d(-90px,70px,0) scale(1.14); }
+}
+
+@keyframes ambientDriftTwo {
+  from { transform: translate3d(0,0,0) scale(1); }
+  to { transform: translate3d(100px,-65px,0) scale(1.18); }
+}
+
+@keyframes statusPulse {
+  0%, 55%, 100% { box-shadow: 0 0 0 5px rgba(115,224,181,.08); }
+  25% { box-shadow: 0 0 0 10px rgba(115,224,181,0); }
+}
+
+@keyframes heroGlow {
+  from { opacity: .72; transform: translate(-50%,-50%) scale(.96); }
+  to { opacity: 1; transform: translate(-50%,-50%) scale(1.07); }
+}
+
+@keyframes phoneFloatFront {
+  0%,100% { margin-top: 0; }
+  50% { margin-top: -11px; }
+}
+
+@keyframes phoneFloatBack {
+  0%,100% { margin-top: 0; }
+  50% { margin-top: 9px; }
+}
+
+@keyframes cardFloatOne {
+  0%,100% { transform: translate3d(0,0,0); }
+  50% { transform: translate3d(6px,-9px,0); }
+}
+
+@keyframes cardFloatTwo {
+  0%,100% { transform: translate3d(0,0,0); }
+  50% { transform: translate3d(-7px,8px,0); }
+}
+
+@keyframes screenEnter {
+  from { opacity: .15; transform: translateY(12px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes orbitBreath {
+  0%,100% { box-shadow: inset 0 0 70px rgba(115,224,181,.04), 0 0 0 rgba(115,224,181,0); }
+  50% { box-shadow: inset 0 0 85px rgba(115,224,181,.07), 0 0 65px rgba(115,224,181,.055); }
+}
+
+@keyframes corePulse {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.035); }
+}
+
+@keyframes orbitItemFloat {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+@keyframes kickerIn {
+  from { opacity: 0; letter-spacing: .22em; }
+  to { opacity: 1; letter-spacing: .13em; }
+}
+
+@media (max-width: 720px) {
+  .site-header.header-hidden {
+    transform: translateY(calc(-100% - 4px));
+  }
+
+  .feature-line::before {
+    left: -8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header,
+  .site-header.header-hidden,
+  .phone-front,
+  .phone-back,
+  .signal-card,
+  .privacy-orbit,
+  .privacy-core,
+  .orbit-item,
+  .ambient,
+  .bar i,
+  #feature-screen,
+  .section-heading.visible .kicker {
+    animation: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .bar i { transform: scaleX(1) !important; }
+  .reveal { filter: none !important; }
+  .scroll-progress { display: none; }
+}
