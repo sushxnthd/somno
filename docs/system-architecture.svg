@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="880" viewBox="0 0 1400 880" role="img" aria-labelledby="title desc">
+  <title id="title">Somno system architecture</title>
+  <desc id="desc">Architecture from multimodal smartphone inputs through quality gates and personal baselines to SDI, recovery modelling, Smart Wake, trends and privacy-first storage.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c0b14"/>
+      <stop offset="1" stop-color="#161326"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8b7cff"/>
+      <stop offset="1" stop-color="#b79cff"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000" flood-opacity="0.32"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 z" fill="#8f84c9"/>
+    </marker>
+    <style>
+      .title{font:700 40px Arial,Helvetica,sans-serif;fill:#fff}
+      .subtitle{font:400 19px Arial,Helvetica,sans-serif;fill:#b9b4cf}
+      .section{font:700 16px Arial,Helvetica,sans-serif;letter-spacing:1.2px;fill:#a89cff}
+      .boxTitle{font:700 19px Arial,Helvetica,sans-serif;fill:#fff}
+      .boxText{font:400 15px Arial,Helvetica,sans-serif;fill:#c9c5d8}
+      .small{font:400 13px Arial,Helvetica,sans-serif;fill:#9992ad}
+      .card{fill:#1d1a2b;stroke:#39334d;stroke-width:1.5}
+      .core{fill:#28213d;stroke:#8b7cff;stroke-width:2}
+      .decision{fill:#2a2237;stroke:#d3a15f;stroke-width:1.8}
+      .output{fill:#192827;stroke:#62c7ae;stroke-width:1.6}
+      .line{fill:none;stroke:#8f84c9;stroke-width:2.2;marker-end:url(#arrow)}
+      .line2{fill:none;stroke:#6b6480;stroke-width:1.8;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1400" height="880" rx="34" fill="url(#bg)"/>
+  <text x="70" y="74" class="title">Somno — privacy-first multimodal fatigue &amp; recovery architecture</text>
+  <text x="70" y="108" class="subtitle">Validated measurement families + personal baselines + transparent fusion + bounded interventions</text>
+
+  <text x="70" y="160" class="section">01 · SMARTPHONE EVIDENCE</text>
+  <g filter="url(#shadow)">
+    <rect class="card" x="70" y="184" rx="18" width="270" height="112"/>
+    <text x="94" y="222" class="boxTitle">Reaction time</text>
+    <text x="94" y="250" class="boxText">PVT-style response speed</text>
+    <text x="94" y="274" class="small">lapses · anticipations · variability</text>
+
+    <rect class="card" x="370" y="184" rx="18" width="270" height="112"/>
+    <text x="394" y="222" class="boxTitle">Face &amp; ocular scan</text>
+    <text x="394" y="250" class="boxText">On-device ML Kit geometry</text>
+    <text x="394" y="274" class="small">closure · EAR · motion · photometry</text>
+
+    <rect class="card" x="670" y="184" rx="18" width="270" height="112"/>
+    <text x="694" y="222" class="boxTitle">Subjective sleepiness</text>
+    <text x="694" y="250" class="boxText">Karolinska-style 1–9 rating</text>
+    <text x="694" y="274" class="small">fast self-report context</text>
+
+    <rect class="card" x="970" y="184" rx="18" width="360" height="112"/>
+    <text x="994" y="222" class="boxTitle">Sleep history</text>
+    <text x="994" y="250" class="boxText">duration · regularity · recent shortfall</text>
+    <text x="994" y="274" class="small">bounded leaky sleep-debt model</text>
+  </g>
+
+  <path class="line" d="M205 296 C205 350, 395 340, 500 376"/>
+  <path class="line" d="M505 296 C505 330, 525 345, 535 376"/>
+  <path class="line" d="M805 296 C805 342, 675 350, 605 376"/>
+  <path class="line" d="M1150 296 C1150 348, 815 350, 670 376"/>
+
+  <text x="70" y="350" class="section">02 · QUALITY, PERSONALIZATION &amp; FUSION</text>
+  <g filter="url(#shadow)">
+    <rect class="core" x="410" y="376" rx="22" width="580" height="110"/>
+    <text x="438" y="414" class="boxTitle">Validity / quality / availability gates</text>
+    <text x="438" y="442" class="boxText">Reject unusable camera evidence · remove missing channels · scale confidence</text>
+    <text x="438" y="466" class="small">No-face / too-dark / unstable / insufficient-sample states are explicit, not guessed</text>
+
+    <rect class="core" x="410" y="528" rx="22" width="580" height="120"/>
+    <text x="438" y="566" class="boxTitle">Personal-reference inference</text>
+    <text x="438" y="594" class="boxText">Frozen baseline normalization + precision-aware multimodal fusion</text>
+    <text x="438" y="620" class="small">PVT 0.40 · Face 0.25 · KSS 0.15 · Sleep debt 0.20 · renormalized when absent</text>
+  </g>
+
+  <path class="line" d="M700 486 L700 528"/>
+  <path class="line" d="M700 648 L700 688"/>
+
+  <text x="70" y="704" class="section">03 · INTERPRETABLE STATE &amp; ACTION</text>
+  <g filter="url(#shadow)">
+    <rect class="decision" x="70" y="726" rx="18" width="300" height="104"/>
+    <text x="94" y="762" class="boxTitle">SDI + confidence</text>
+    <text x="94" y="790" class="boxText">0–100 personal alertness state</text>
+    <text x="94" y="814" class="small">with signal count &amp; confidence label</text>
+
+    <rect class="decision" x="400" y="726" rx="18" width="300" height="104"/>
+    <text x="424" y="762" class="boxTitle">Recovery model</text>
+    <text x="424" y="790" class="boxText">Debt + circadian + inertia context</text>
+    <text x="424" y="814" class="small">stage-shaped priors are modelled, not sensed</text>
+
+    <rect class="output" x="730" y="726" rx="18" width="280" height="104"/>
+    <text x="754" y="762" class="boxTitle">Smart Wake</text>
+    <text x="754" y="790" class="boxText">Native Android alarm loop</text>
+    <text x="754" y="814" class="small">exact alarm · check-in · bounded snooze</text>
+
+    <rect class="output" x="1040" y="726" rx="18" width="290" height="104"/>
+    <text x="1064" y="762" class="boxTitle">Longitudinal feedback</text>
+    <text x="1064" y="790" class="boxText">Trends · insights · local-first sync</text>
+    <text x="1064" y="814" class="small">raw face images never cloud-stored</text>
+  </g>
+
+  <path class="line2" d="M620 688 C500 690, 350 708, 270 726"/>
+  <path class="line2" d="M670 688 C630 700, 585 710, 550 726"/>
+  <path class="line2" d="M730 688 C785 700, 835 710, 870 726"/>
+  <path class="line2" d="M770 688 C900 690, 1080 705, 1180 726"/>
+</svg>
