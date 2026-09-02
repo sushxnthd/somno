@@ -1,4 +1,13 @@
-/* Motion layer for the Somno website */
+/* Motion and interaction layer for the Somno website */
+
+/* Hidden must always win over component display rules. */
+.mobile-nav[hidden] {
+  display: none !important;
+}
+
+.mobile-nav {
+  display: none;
+}
 
 .site-header {
   will-change: transform, background, border-color, box-shadow;
@@ -50,7 +59,8 @@
 .impact-card,
 .architecture-card,
 .fusion-panel,
-.cta-card {
+.cta-card,
+.evidence-console {
   will-change: transform;
 }
 
@@ -225,6 +235,271 @@
   animation: kickerIn .55s cubic-bezier(.2,.8,.2,1) both;
 }
 
+.desktop-nav a {
+  position: relative;
+}
+
+.desktop-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -9px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--violet), var(--cyan));
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform .24s ease;
+}
+
+.desktop-nav a.nav-active::after,
+.desktop-nav a:hover::after {
+  transform: scaleX(1);
+}
+
+/* Interactive research explorer */
+.evidence-console {
+  margin-top: 20px;
+  padding: 1px;
+  border-radius: 30px;
+  background: linear-gradient(135deg, rgba(154,135,255,.34), rgba(103,216,255,.12), rgba(115,224,181,.18));
+  box-shadow: 0 26px 80px rgba(0,0,0,.22);
+}
+
+.evidence-console-inner {
+  overflow: hidden;
+  border-radius: 29px;
+  background:
+    radial-gradient(circle at 78% 22%, rgba(103,216,255,.07), transparent 27%),
+    radial-gradient(circle at 15% 80%, rgba(154,135,255,.08), transparent 28%),
+    #0c0a12;
+}
+
+.evidence-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.evidence-topbar > span {
+  color: var(--muted-2);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.evidence-tabs {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.evidence-tab {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.025);
+  color: #aaa4b5;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font: 700 11px Inter, sans-serif;
+  cursor: pointer;
+  transition: color .22s ease, border-color .22s ease, background .22s ease, transform .22s ease;
+}
+
+.evidence-tab:hover {
+  transform: translateY(-1px);
+  color: white;
+}
+
+.evidence-tab.active {
+  color: white;
+  border-color: rgba(154,135,255,.38);
+  background: rgba(154,135,255,.12);
+}
+
+.evidence-stage {
+  display: grid;
+  grid-template-columns: .88fr 1.12fr;
+  min-height: 370px;
+}
+
+.evidence-visual {
+  position: relative;
+  min-height: 370px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-right: 1px solid var(--line);
+}
+
+.evidence-scope {
+  position: relative;
+  width: min(360px, 80%);
+  aspect-ratio: 1.65;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 22px;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    rgba(7,7,11,.58);
+  background-size: 32px 32px;
+  box-shadow: inset 0 0 55px rgba(0,0,0,.3), 0 22px 60px rgba(0,0,0,.2);
+}
+
+.evidence-scope::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(115,224,181,.07), transparent);
+  transform: translateX(-110%);
+  animation: scopeScan 4.6s linear infinite;
+}
+
+.evidence-wave {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 50%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--green) 8%, var(--cyan) 48%, var(--violet) 86%, transparent);
+  box-shadow: 0 0 15px rgba(103,216,255,.38);
+}
+
+.evidence-wave::before,
+.evidence-wave::after {
+  content: "";
+  position: absolute;
+  width: 16%;
+  height: 46px;
+  top: -22px;
+  border-top: 2px solid var(--cyan);
+  border-right: 2px solid var(--cyan);
+  transform: skewX(-42deg) rotate(-12deg);
+  opacity: .8;
+}
+
+.evidence-wave::before { left: 24%; }
+.evidence-wave::after { right: 19%; transform: skewX(36deg) rotate(15deg); border-color: var(--violet); }
+
+.evidence-dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 7px rgba(115,224,181,.08), 0 0 22px rgba(115,224,181,.42);
+  animation: evidenceDot 3.8s ease-in-out infinite;
+}
+
+.evidence-dot.dot-one { left: 24%; top: 46%; }
+.evidence-dot.dot-two { right: 27%; top: 42%; animation-delay: -1.2s; background: var(--violet); }
+.evidence-dot.dot-three { left: 54%; bottom: 26%; animation-delay: -2.1s; background: var(--cyan); }
+
+.evidence-scope-label {
+  position: absolute;
+  left: 14px;
+  top: 12px;
+  color: #7f798d;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.evidence-scope-value {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  color: #d8d3e3;
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.evidence-copy-panel {
+  padding: 42px;
+  align-self: center;
+}
+
+.evidence-copy-panel.is-switching {
+  animation: evidenceSwap .42s cubic-bezier(.2,.8,.2,1);
+}
+
+.evidence-kicker {
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.evidence-copy-panel h3 {
+  margin-top: 12px;
+  font-size: clamp(28px, 3vw, 40px);
+}
+
+.evidence-copy-panel > p {
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  max-width: 650px;
+}
+
+.evidence-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.evidence-fact {
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.07);
+  background: rgba(255,255,255,.025);
+}
+
+.evidence-fact span {
+  display: block;
+  color: var(--muted-2);
+  font-size: 9px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.evidence-fact strong {
+  display: block;
+  margin-top: 4px;
+  color: #f0edf7;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.evidence-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 22px;
+  color: #b9afff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.evidence-source span {
+  transition: transform .2s ease;
+}
+
+.evidence-source:hover span {
+  transform: translateX(4px);
+}
+
 @keyframes ambientDriftOne {
   from { transform: translate3d(0,0,0) scale(1); }
   to { transform: translate3d(-90px,70px,0) scale(1.14); }
@@ -290,13 +565,68 @@
   to { opacity: 1; letter-spacing: .13em; }
 }
 
+@keyframes scopeScan {
+  to { transform: translateX(110%); }
+}
+
+@keyframes evidenceDot {
+  0%,100% { transform: translateY(0) scale(1); opacity: .72; }
+  50% { transform: translateY(-12px) scale(1.15); opacity: 1; }
+}
+
+@keyframes evidenceSwap {
+  from { opacity: .35; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 900px) {
+  .evidence-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .evidence-visual {
+    min-height: 300px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .evidence-scope {
+    width: min(420px, 76%);
+  }
+}
+
 @media (max-width: 720px) {
   .site-header.header-hidden {
     transform: translateY(calc(-100% - 4px));
   }
 
+  .mobile-nav:not([hidden]) {
+    display: grid;
+  }
+
   .feature-line::before {
     left: -8px;
+  }
+
+  .evidence-topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .evidence-copy-panel {
+    padding: 28px 22px;
+  }
+
+  .evidence-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .evidence-visual {
+    min-height: 250px;
+  }
+
+  .evidence-scope {
+    width: 86%;
   }
 }
 
@@ -312,7 +642,10 @@
   .ambient,
   .bar i,
   #feature-screen,
-  .section-heading.visible .kicker {
+  .section-heading.visible .kicker,
+  .evidence-scope::before,
+  .evidence-dot,
+  .evidence-copy-panel.is-switching {
     animation: none !important;
     transform: none !important;
     transition: none !important;
