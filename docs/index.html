@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="motion.css" />
 </head>
 <body>
   <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -163,6 +164,42 @@
             <p>Sleep loss affects cognitive and physical performance, while sleep-focused recovery strategies can support readiness. Somno makes those recovery patterns visible in a personal timeline.</p>
             <a href="https://pubmed.ncbi.nlm.nih.gov/39006249/" target="_blank" rel="noreferrer">Gong et al., 2024</a>
           </article>
+        </div>
+
+        <div class="evidence-console reveal" id="evidence-console">
+          <div class="evidence-console-inner">
+            <div class="evidence-topbar">
+              <span>Interactive evidence explorer</span>
+              <div class="evidence-tabs" role="tablist" aria-label="Scientific evidence families">
+                <button class="evidence-tab active" type="button" role="tab" aria-selected="true" data-evidence="pvt">Reaction time</button>
+                <button class="evidence-tab" type="button" role="tab" aria-selected="false" data-evidence="kss">KSS</button>
+                <button class="evidence-tab" type="button" role="tab" aria-selected="false" data-evidence="ocular">Ocular</button>
+                <button class="evidence-tab" type="button" role="tab" aria-selected="false" data-evidence="performance">Performance</button>
+              </div>
+            </div>
+            <div class="evidence-stage">
+              <div class="evidence-visual" aria-hidden="true">
+                <div class="evidence-scope">
+                  <span class="evidence-scope-label" id="evidence-scope-label">PVT signal</span>
+                  <div class="evidence-wave"></div>
+                  <span class="evidence-dot dot-one"></span>
+                  <span class="evidence-dot dot-two"></span>
+                  <span class="evidence-dot dot-three"></span>
+                  <span class="evidence-scope-value" id="evidence-scope-value">response speed + lapses</span>
+                </div>
+              </div>
+              <div class="evidence-copy-panel" id="evidence-copy">
+                <div class="evidence-kicker" id="evidence-kicker">Psychomotor vigilance</div>
+                <h3 id="evidence-title">Sleep loss shows up in response speed.</h3>
+                <p id="evidence-body">Brief psychomotor vigilance testing has been studied as a practical way to retain sensitivity to sleep-loss-related changes in attention. Somno uses the same measurement family to track response speed, lapses, anticipations and variability against a personal baseline.</p>
+                <div class="evidence-facts">
+                  <div class="evidence-fact"><span>Research signal</span><strong id="evidence-fact-one">Reaction speed, lapses and sustained attention</strong></div>
+                  <div class="evidence-fact"><span>Somno layer</span><strong id="evidence-fact-two">Highest-weight behavioral input in the SDI</strong></div>
+                </div>
+                <a class="evidence-source" id="evidence-source" href="https://pubmed.ncbi.nlm.nih.gov/22025811/" target="_blank" rel="noreferrer">Read the research <span>→</span></a>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="fusion-panel reveal">
