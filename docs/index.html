@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#08070d" />
+  <meta name="description" content="Somno is a privacy-first multimodal AI system for fatigue awareness, recovery modelling and smarter wake decisions." />
+  <title>Somno | Understand fatigue. Recover better.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+
+  <header class="site-header" id="top">
+    <div class="shell nav-shell">
+      <a class="brand" href="#top" aria-label="Somno home">
+        <img src="https://raw.githubusercontent.com/sushxnthd/somno/main/assets/icon.png" alt="" />
+        <span>Somno</span>
+      </a>
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="#science">Science</a>
+        <a href="#working">How it works</a>
+        <a href="#impact">Impact</a>
+        <a href="#privacy">Privacy</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="text-link" href="https://github.com/sushxnthd/somno" target="_blank" rel="noreferrer">GitHub</a>
+        <a class="button button-small" href="https://github.com/sushxnthd/somno/releases/download/v27/somno-v27-release.apk">Download APK</a>
+      </div>
+      <button class="menu-button" aria-label="Open navigation" aria-expanded="false">Menu</button>
+    </div>
+    <div class="mobile-nav shell" hidden>
+      <a href="#science">Science</a>
+      <a href="#working">How it works</a>
+      <a href="#impact">Impact</a>
+      <a href="#privacy">Privacy</a>
+      <a href="https://github.com/sushxnthd/somno" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero section-shell">
+      <div class="shell hero-grid">
+        <div class="hero-copy reveal">
+          <div class="eyebrow"><span class="status-dot"></span> Privacy-first multimodal fatigue intelligence</div>
+          <h1>Understand today.<br /><span>Recover better.</span><br />Perform tomorrow.</h1>
+          <p class="hero-lead">Somno turns reaction time, on-device facial and ocular signals, subjective sleepiness and sleep history into a personal view of fatigue, recovery and readiness.</p>
+          <div class="hero-actions">
+            <a class="button" href="https://github.com/sushxnthd/somno/releases/download/v27/somno-v27-release.apk">Get Somno for Android</a>
+            <a class="button button-ghost" href="#working">See how it works</a>
+          </div>
+          <div class="hero-meta">
+            <div><strong>4</strong><span>signal families</span></div>
+            <div><strong>100%</strong><span>on-device face processing</span></div>
+            <div><strong>Personal</strong><span>baseline inference</span></div>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal delay-1" aria-label="Somno application preview">
+          <div class="phone phone-back">
+            <img src="https://raw.githubusercontent.com/sushxnthd/somno/main/listing/play/recovery.png" alt="Somno recovery screen" />
+          </div>
+          <div class="phone phone-front">
+            <img src="https://raw.githubusercontent.com/sushxnthd/somno/main/listing/play/home.png" alt="Somno daily state screen" />
+          </div>
+          <div class="signal-card signal-card-one">
+            <span>Reaction speed</span>
+            <strong>Personal baseline</strong>
+          </div>
+          <div class="signal-card signal-card-two">
+            <span>State estimate</span>
+            <strong>SDI + confidence</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="trust-strip">
+      <div class="shell trust-grid reveal">
+        <span>React Native</span><span>TypeScript</span><span>ML Kit</span><span>Kotlin</span><span>Supabase</span><span>Local-first</span>
+      </div>
+    </section>
+
+    <section class="section section-dark" id="working">
+      <div class="shell">
+        <div class="section-heading reveal">
+          <p class="kicker">How Somno works</p>
+          <h2>Four signals. One personal state.</h2>
+          <p>Somno treats fatigue as a changing within-person state instead of reducing sleep to a single duration metric.</p>
+        </div>
+
+        <div class="signal-grid">
+          <article class="signal-tile reveal">
+            <div class="icon-chip cyan">01</div>
+            <h3>Psychomotor vigilance</h3>
+            <p>A short reaction-time probe captures response speed, lapses, false starts, variability and time-on-task behavior.</p>
+          </article>
+          <article class="signal-tile reveal delay-1">
+            <div class="icon-chip purple">02</div>
+            <h3>Face and ocular scan</h3>
+            <p>On-device computer vision extracts temporal, ocular, motion and photometric features while keeping raw frames on the phone.</p>
+          </article>
+          <article class="signal-tile reveal delay-2">
+            <div class="icon-chip rose">03</div>
+            <h3>Subjective sleepiness</h3>
+            <p>A Karolinska Sleepiness Scale input adds the user's perceived state as an independent channel instead of treating it as ground truth.</p>
+          </article>
+          <article class="signal-tile reveal delay-3">
+            <div class="icon-chip amber">04</div>
+            <h3>Sleep history</h3>
+            <p>Recent duration, regularity and accumulated shortfall provide longitudinal context for the current measurement.</p>
+          </article>
+        </div>
+
+        <div class="architecture-card reveal">
+          <div class="architecture-copy">
+            <p class="kicker">System architecture</p>
+            <h3>Quality-aware from input to action</h3>
+            <p>Signal validity is checked before personalization and fusion. Missing channels are reweighted dynamically, while the resulting state feeds recovery modelling, Smart Wake and longitudinal feedback.</p>
+            <a class="inline-link" href="ARCHITECTURE.md">Read the technical architecture <span>→</span></a>
+          </div>
+          <div class="architecture-visual">
+            <img src="system-architecture.svg" alt="Somno system architecture diagram" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="science">
+      <div class="shell">
+        <div class="section-heading reveal">
+          <p class="kicker">Scientific foundation</p>
+          <h2>Built from established sleep and fatigue science.</h2>
+          <p>Somno combines measurement families used across vigilance, sleepiness, fatigue and human-performance research, then interprets them against the user's own baseline.</p>
+        </div>
+
+        <div class="science-grid">
+          <article class="science-card reveal">
+            <div class="science-tag">Vigilance</div>
+            <h3>Reaction-time slowing and lapses</h3>
+            <p>Psychomotor vigilance is widely used to quantify performance changes associated with sleep loss. Somno captures response speed, lapses, anticipations and variability in a compact mobile probe.</p>
+            <a href="https://pubmed.ncbi.nlm.nih.gov/22025811/" target="_blank" rel="noreferrer">Basner, Mollicone & Dinges, 2011</a>
+          </article>
+          <article class="science-card reveal delay-1">
+            <div class="science-tag">Sleepiness</div>
+            <h3>Karolinska Sleepiness Scale</h3>
+            <p>KSS provides a fast subjective view of sleepiness and has demonstrated relationships with behavioral and EEG indicators. Somno treats it as one channel inside a broader multimodal estimate.</p>
+            <a href="https://pubmed.ncbi.nlm.nih.gov/16679057/" target="_blank" rel="noreferrer">Kaida et al., 2006</a>
+          </article>
+          <article class="science-card reveal delay-2">
+            <div class="science-tag">Computer vision</div>
+            <h3>Ocular fatigue markers</h3>
+            <p>Eyelid closure and ocular behavior have a long research history in fatigue and vigilance monitoring. Somno derives quality-scored ocular and temporal features on-device.</p>
+            <a href="https://rosap.ntl.bts.gov/view/dot/2518" target="_blank" rel="noreferrer">Dinges et al., NHTSA</a>
+          </article>
+          <article class="science-card reveal delay-3">
+            <div class="science-tag">Performance</div>
+            <h3>Sleep and physical readiness</h3>
+            <p>Sleep loss affects cognitive and physical performance, while sleep-focused recovery strategies can support readiness. Somno makes those recovery patterns visible in a personal timeline.</p>
+            <a href="https://pubmed.ncbi.nlm.nih.gov/39006249/" target="_blank" rel="noreferrer">Gong et al., 2024</a>
+          </article>
+        </div>
+
+        <div class="fusion-panel reveal">
+          <div class="fusion-copy">
+            <p class="kicker">Transparent fusion</p>
+            <h3>The score is inspectable.</h3>
+            <p>Somno uses explicit signal weights and personal-reference normalization rather than an opaque single-output model.</p>
+            <code>SDI = clamp(50 + 10 × weighted personal-reference z-score, 0, 100)</code>
+          </div>
+          <div class="weights" aria-label="Somno SDI signal weights">
+            <div class="weight-row"><span>Reaction time</span><div class="bar"><i style="width:40%"></i></div><strong>40%</strong></div>
+            <div class="weight-row"><span>Face + ocular</span><div class="bar"><i style="width:25%"></i></div><strong>25%</strong></div>
+            <div class="weight-row"><span>Sleep history</span><div class="bar"><i style="width:20%"></i></div><strong>20%</strong></div>
+            <div class="weight-row"><span>KSS</span><div class="bar"><i style="width:15%"></i></div><strong>15%</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-dark product-section">
+      <div class="shell">
+        <div class="section-heading reveal">
+          <p class="kicker">From measurement to action</p>
+          <h2>Useful after the score, not just during it.</h2>
+          <p>Somno connects state estimation to recovery planning, history and a native Android alarm workflow.</p>
+        </div>
+
+        <div class="product-showcase">
+          <div class="product-copy reveal">
+            <div class="feature-line active" data-screen="result">
+              <span>01</span><div><h3>Explainable SDI</h3><p>See the state estimate, confidence and strongest contributing signals instead of a black-box number.</p></div>
+            </div>
+            <div class="feature-line" data-screen="recovery">
+              <span>02</span><div><h3>Recovery modelling</h3><p>Track sleep debt, recent patterns and recovery context across days rather than treating each check-in in isolation.</p></div>
+            </div>
+            <div class="feature-line" data-screen="alarms">
+              <span>03</span><div><h3>Smart Wake</h3><p>A custom Kotlin alarm layer handles exact scheduling, wake flows, bounded snooze logic and reboot re-arming.</p></div>
+            </div>
+          </div>
+          <div class="product-phone reveal delay-1">
+            <div class="phone single-phone">
+              <img id="feature-screen" src="https://raw.githubusercontent.com/sushxnthd/somno/main/listing/play/result.png" alt="Somno result screen" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="impact">
+      <div class="shell">
+        <div class="section-heading reveal">
+          <p class="kicker">Impact</p>
+          <h2>Fatigue is not a student-only problem.</h2>
+          <p>The same need for better fatigue awareness appears across study, sport, transport and irregular work.</p>
+        </div>
+
+        <div class="impact-grid">
+          <article class="impact-card reveal"><div class="impact-icon">ST</div><h3>Students</h3><p>Track accumulating sleep loss during exams and compare daily alertness with a stable personal reference.</p></article>
+          <article class="impact-card reveal delay-1"><div class="impact-icon">AT</div><h3>Athletes</h3><p>Bring sleep shortfall, reaction-time change and perceived fatigue into a single recovery view around training, travel and competition.</p></article>
+          <article class="impact-card reveal delay-2"><div class="impact-icon">DR</div><h3>Drivers</h3><p>Use a fast pre-task fatigue check to make changes in vigilance and recent sleep shortfall more visible before demanding journeys.</p></article>
+          <article class="impact-card reveal"><div class="impact-icon">NW</div><h3>Night workers</h3><p>Observe alertness changes across irregular schedules, repeated short sleep and difficult circadian windows.</p></article>
+          <article class="impact-card reveal delay-1"><div class="impact-icon">OC</div><h3>On-call teams</h3><p>Quantify the effect of disrupted nights and recovery across rotating or unpredictable duty cycles.</p></article>
+          <article class="impact-card reveal delay-2"><div class="impact-icon">RS</div><h3>Researchers</h3><p>Explore a privacy-first mobile architecture for repeated multimodal fatigue and human-performance measurement.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section privacy-section" id="privacy">
+      <div class="shell privacy-grid">
+        <div class="privacy-copy reveal">
+          <p class="kicker">Privacy by architecture</p>
+          <h2>Your face stays on your phone.</h2>
+          <p>Somno processes camera frames transiently on-device. The scoring pipeline works with derived numeric features rather than uploading a stream of face images to a server.</p>
+          <ul class="check-list">
+            <li>Raw camera frames processed locally</li>
+            <li>Local-first core check-ins and history</li>
+            <li>Optional Supabase account sync</li>
+            <li>Data export and account deletion controls</li>
+            <li>Explicit quality and availability handling</li>
+          </ul>
+        </div>
+        <div class="privacy-visual reveal delay-1">
+          <div class="privacy-orbit">
+            <div class="privacy-core">
+              <span>ON DEVICE</span>
+              <strong>Face analysis</strong>
+              <small>numeric features only</small>
+            </div>
+            <span class="orbit-item orbit-a">Camera</span>
+            <span class="orbit-item orbit-b">Quality gates</span>
+            <span class="orbit-item orbit-c">Features</span>
+            <span class="orbit-item orbit-d">SDI</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section technical-section">
+      <div class="shell technical-grid">
+        <div class="reveal">
+          <p class="kicker">Engineering</p>
+          <h2>Built like a product.</h2>
+          <p class="technical-lead">The application combines a typed React Native layer, on-device vision, local persistence, optional cloud sync and a custom native Android alarm module.</p>
+        </div>
+        <div class="stack-list reveal delay-1">
+          <div><span>Mobile</span><strong>React Native + Expo + TypeScript</strong></div>
+          <div><span>Vision</span><strong>Expo Camera + Google ML Kit</strong></div>
+          <div><span>Native</span><strong>Kotlin Smart Wake module</strong></div>
+          <div><span>State</span><strong>Zustand + local-first persistence</strong></div>
+          <div><span>Cloud</span><strong>Supabase auth + sync</strong></div>
+          <div><span>Verification</span><strong>Typecheck + logic suites + release checks</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="shell cta-card reveal">
+        <div>
+          <p class="kicker">Somno v27</p>
+          <h2>See your fatigue. Understand your recovery.</h2>
+          <p>Explore the source, inspect the models, or install the Android build directly from GitHub.</p>
+        </div>
+        <div class="cta-actions">
+          <a class="button" href="https://github.com/sushxnthd/somno/releases/download/v27/somno-v27-release.apk">Download APK</a>
+          <a class="button button-ghost" href="https://github.com/sushxnthd/somno" target="_blank" rel="noreferrer">View source on GitHub</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footer-grid">
+      <div class="footer-brand"><img src="https://raw.githubusercontent.com/sushxnthd/somno/main/assets/icon.png" alt="" /><div><strong>Somno</strong><span>Privacy-first fatigue intelligence</span></div></div>
+      <div class="footer-links"><a href="#science">Science</a><a href="#working">How it works</a><a href="https://github.com/sushxnthd/somno">GitHub</a><a href="https://github.com/sushxnthd/somno/releases/tag/v27">Release</a></div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
