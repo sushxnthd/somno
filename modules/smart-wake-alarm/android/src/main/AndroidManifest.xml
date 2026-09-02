@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Library-module manifest. The Android Gradle Plugin's manifest merger folds these permissions
+  and components into the app's final AndroidManifest.xml automatically at build time — no
+  config-plugin manifest edits needed for these (unlike iOS's Info.plist, which has no
+  equivalent auto-merge and does need a config plugin, see plugins/withSmartWakeAlarm.js).
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <!-- Wakes the device and shows the alarm UI over the lock screen. -->
+  <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+  <!--
+    Exact-time alarms. Two permissions, and the maxSdkVersion is the point.
+
+    USE_EXACT_ALARM (API 33+) is granted at install and is restricted by Play policy to apps whose
+    core function is an alarm clock or calendar. Somno qualifies. SCHEDULE_EXACT_ALARM is the older
+    route: user-revocable on 31-32, and on 34+ denied by default to apps that do not qualify.
+
+    Declaring SCHEDULE_EXACT_ALARM unbounded alongside USE_EXACT_ALARM asks for a permission the app
+    does not need on any release where USE_EXACT_ALARM applies, and widens the Play review surface
+    for no behavioural gain — canScheduleExactAlarms() is already true from the install-time grant.
+    Capping it at 32 is Google's own documented pattern for exactly this case.
+  -->
+  <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
+  <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+  <!-- Android 13+ runtime-requestable notification permission (the alarm fires as a
+       full-screen-intent notification). -->
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+  <!-- So scheduled alarms survive a device reboot. -->
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
+  <!--
+    The alarm rings from a foreground service, not from the broadcast receiver. A receiver's
+    process is only guaranteed to live for the length of onReceive, so a tone started there can be
+    killed the instant it returns — at 6am, on an idle phone, which is when it happens.
+    mediaPlayback is the type: the service exists to keep audio playing.
+  -->
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+  <uses-permission android:name="android.permission.VIBRATE" />
+
+  <application>
+    <service
+      android:name=".AlarmService"
+      android:exported="false"
+      android:foregroundServiceType="mediaPlayback" />
+
+    <receiver
+      android:name="expo.modules.smartwakealarm.AlarmReceiver"
+      android:enabled="true"
+      android:exported="false" />
+
+    <!--
+      Android 12 and 12L let the user revoke exact-alarm access and grant it again from system
+      settings. Regranting does not restore anything by itself: the alarms dropped when it was
+      revoked stay dropped until something re-arms them, and until now the only thing that did was
+      the next app launch. Somebody who fixed the permission at bedtime and did not reopen the app
+      still had no alarm in the morning.
+    -->
+    <receiver
+      android:name="expo.modules.smartwakealarm.ExactAlarmPermissionReceiver"
+      android:enabled="true"
+      android:exported="false">
+      <intent-filter>
+        <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+      </intent-filter>
+    </receiver>
+
+    <receiver
+      android:name="expo.modules.smartwakealarm.BootReceiver"
+      android:enabled="true"
+      android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+        <!-- Some OEM skins send only this one. -->
+        <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+        <!-- An in-place update also clears the device's alarms, with no reboot to signal it. -->
+        <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+        <!--
+          A clock or timezone change moves every wall-clock alarm. AlarmManager entries are absolute
+          instants, so flying to another timezone left tomorrow's 7am armed for what is now 2am —
+          and nothing re-armed it until the next reboot or app launch.
+        -->
+        <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+        <action android:name="android.intent.action.TIME_SET" />
+      </intent-filter>
+    </receiver>
+
+    <activity
+      android:name="expo.modules.smartwakealarm.AlarmActivity"
+      android:exported="false"
+      android:launchMode="singleInstance"
+      android:showWhenLocked="true"
+      android:turnScreenOn="true"
+      android:excludeFromRecents="true"
+      android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+  </application>
+
+</manifest>

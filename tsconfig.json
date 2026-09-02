@@ -1,0 +1,10 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    // scripts/*.ts run straight through node's type stripping, and node's ESM resolver wants the
+    // real filename on a relative import. Metro never sees these files.
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  }
+}

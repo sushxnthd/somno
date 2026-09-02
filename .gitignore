@@ -1,0 +1,52 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+# .env itself is ignored, not just .env.*.local: it is where the Supabase project URL and anon key
+# go, and the previous pattern would have committed the first one anybody created.
+.env
+.env.*
+!.env.example
+
+# typescript
+*.tsbuildinfo
+
+# generated native folders
+/ios
+/android
+
+# npm pack artefacts from vendoring the prototype's runtime for the visual audit
+*.tgz
+
+# Unframed screen captures. The composed listing images in listing/play are the deliverable; these
+# are the intermediate they are built from and are reproduced by scripts/store-assets.cjs.
+/listing/raw/

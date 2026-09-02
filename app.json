@@ -1,0 +1,83 @@
+{
+  "expo": {
+    "name": "Somno",
+    "slug": "somno",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#07060C",
+    "scheme": "somno",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.somno.app"
+    },
+    "android": {
+      "package": "com.somno.app",
+      "versionCode": 1,
+      "allowBackup": false,
+      "adaptiveIcon": {
+        "backgroundColor": "#07060C",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "blockedPermissions": [
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "backgroundColor": "#07060C"
+    },
+    "plugins": [
+      "./plugins/withSmartWakeAlarm.js",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "extraProguardRules": "-keep class expo.modules.smartwakealarm.** { *; }\n-keep class com.somno.app.** { *; }"
+          }
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 148,
+          "resizeMode": "contain",
+          "backgroundColor": "#07060C",
+          "dark": { "backgroundColor": "#07060C" }
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Somno uses the front camera for the face scan. The image is measured on this device and never leaves it.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "barcodeScannerEnabled": false
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/android-icon-monochrome.png",
+          "color": "#8A7BFF"
+        }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.300611786949-9qehonm8bv8bevnebbvgrdgjik06em86"
+        }
+      ]
+    ]
+  }
+}

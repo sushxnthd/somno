@@ -1,0 +1,9 @@
+{
+  "name": "smart-wake-alarm",
+  "version": "1.0.0",
+  "description": "Somno's native Smart Wake alarm module (Android full-screen intent + iOS background audio loop).",
+  "main": "index.ts",
+  "types": "index.ts",
+  "license": "UNLICENSED",
+  "private": true
+}
