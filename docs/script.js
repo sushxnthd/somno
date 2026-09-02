@@ -14,6 +14,24 @@ let scrollTicking = false;
 
 const mobileMenuOpen = () => menuButton?.getAttribute('aria-expanded') === 'true';
 
+const closeMobileMenu = () => {
+  if (!mobileNav) return;
+  menuButton?.setAttribute('aria-expanded', 'false');
+  mobileNav.hidden = true;
+  mobileNav.setAttribute('aria-hidden', 'true');
+  mobileNav.style.display = 'none';
+};
+
+const openMobileMenu = () => {
+  if (!mobileNav || !window.matchMedia('(max-width: 720px)').matches) return;
+  menuButton?.setAttribute('aria-expanded', 'true');
+  mobileNav.hidden = false;
+  mobileNav.setAttribute('aria-hidden', 'false');
+  mobileNav.style.display = 'grid';
+};
+
+closeMobileMenu();
+
 const updateScrollUI = () => {
   const y = Math.max(0, window.scrollY);
   const delta = y - lastScrollY;
@@ -50,19 +68,19 @@ updateScrollUI();
 window.addEventListener('scroll', requestScrollUpdate, { passive: true });
 
 menuButton?.addEventListener('click', () => {
-  const open = menuButton.getAttribute('aria-expanded') === 'true';
-  menuButton.setAttribute('aria-expanded', String(!open));
-  if (mobileNav) mobileNav.hidden = open;
+  if (mobileMenuOpen()) closeMobileMenu();
+  else openMobileMenu();
   header?.classList.remove('header-hidden');
   header?.classList.add('header-visible');
 });
 
 mobileNav?.querySelectorAll('a').forEach((link) => {
-  link.addEventListener('click', () => {
-    menuButton?.setAttribute('aria-expanded', 'false');
-    mobileNav.hidden = true;
-  });
+  link.addEventListener('click', closeMobileMenu);
 });
+
+window.addEventListener('resize', () => {
+  if (!window.matchMedia('(max-width: 720px)').matches) closeMobileMenu();
+}, { passive: true });
 
 const revealItems = document.querySelectorAll('.reveal');
 
