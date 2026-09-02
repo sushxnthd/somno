@@ -18,7 +18,7 @@ Instead of treating sleep as a single number, Somno models fatigue as a changing
 
 ### Android builds
 
-**[Somno v27 builds on Google Drive](https://drive.google.com/drive/folders/1LCeZuJZ3pZdY8xnOJjpHKwOgkAhN6TEX?usp=drive_link)**
+**[Download APK](https://github.com/sushxnthd/somno/releases/download/v27/somno-v27-release.apk)** · **[Download AAB](https://github.com/sushxnthd/somno/releases/download/v27/somno-v27-release.aab)** · **[Somno v27 release](https://github.com/sushxnthd/somno/releases/tag/v27)**
 
 ## Product preview
 
