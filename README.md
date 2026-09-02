@@ -10,6 +10,11 @@
     <img alt="Privacy" src="https://img.shields.io/badge/raw%20face%20images-not%20stored-6D4AFF" />
     <img alt="Scientific basis" src="https://img.shields.io/badge/scientific%20basis-evidence--backed-A77BFF" />
   </p>
+  <p>
+    <strong><a href="https://sushxnthd.github.io/somno/">Website</a></strong> ·
+    <strong><a href="https://github.com/sushxnthd/somno/releases/download/v27/somno-v27-release.apk">Download APK</a></strong> ·
+    <strong><a href="https://github.com/sushxnthd/somno/releases/tag/v27">Release</a></strong>
+  </p>
 </div>
 
 Somno is a smartphone system for understanding fatigue relative to your own alert baseline. It combines reaction-time performance, on-device facial and ocular features, subjective sleepiness and recent sleep history into a transparent **Sleep Deprivation Index (SDI)**, then turns that state estimate into recovery guidance, longitudinal insights and Smart Wake decisions.
