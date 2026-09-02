@@ -1,8 +1,3 @@
-const motionStyles = document.createElement('link');
-motionStyles.rel = 'stylesheet';
-motionStyles.href = 'motion.css';
-document.head.appendChild(motionStyles);
-
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const header = document.querySelector('.site-header');
 const menuButton = document.querySelector('.menu-button');
@@ -188,6 +183,133 @@ featureLines.forEach((line) => {
     }
   });
 });
+
+const evidenceData = {
+  pvt: {
+    kicker: 'Psychomotor vigilance',
+    title: 'Sleep loss shows up in response speed.',
+    body: 'Brief psychomotor vigilance testing has been studied as a practical way to retain sensitivity to sleep-loss-related changes in attention. Somno uses the same measurement family to track response speed, lapses, anticipations and variability against a personal baseline.',
+    factOne: 'Reaction speed, lapses and sustained attention',
+    factTwo: 'Highest-weight behavioral input in the SDI',
+    source: 'https://pubmed.ncbi.nlm.nih.gov/22025811/',
+    scopeLabel: 'PVT signal',
+    scopeValue: 'response speed + lapses'
+  },
+  kss: {
+    kicker: 'Subjective sleepiness',
+    title: 'Perceived sleepiness carries measurable information.',
+    body: 'The Karolinska Sleepiness Scale is widely used in sleep research. Kaida and colleagues reported relationships between KSS ratings and behavioral plus EEG measures of sleepiness, giving Somno a compact subjective signal that complements its objective channels.',
+    factOne: 'Self-reported momentary sleepiness on a 1 to 9 scale',
+    factTwo: 'Independent subjective channel inside multimodal fusion',
+    source: 'https://pubmed.ncbi.nlm.nih.gov/16679057/',
+    scopeLabel: 'KSS signal',
+    scopeValue: 'subjective state + context'
+  },
+  ocular: {
+    kicker: 'Ocular fatigue markers',
+    title: 'The eyes reveal changes in vigilance.',
+    body: 'Controlled fatigue research has linked eyelid closure measures such as PERCLOS with degraded visual attention. Somno extends that evidence family with on-device temporal and geometric features, including closure behavior, eye geometry, motion and photometric quality.',
+    factOne: 'Eyelid closure and ocular behavior under fatigue',
+    factTwo: 'Quality-gated visual signal processed on-device',
+    source: 'https://rosap.ntl.bts.gov/view/dot/2518',
+    scopeLabel: 'Ocular signal',
+    scopeValue: 'closure + geometry + motion'
+  },
+  performance: {
+    kicker: 'Sleep and performance',
+    title: 'Sleep debt reaches beyond feeling tired.',
+    body: 'A 2024 meta-analysis reported that acute sleep deprivation can impair overall athletic performance across multiple performance domains. Somno brings recent sleep shortfall together with cognitive speed and perceived fatigue to build a broader recovery picture.',
+    factOne: 'Cognitive and physical performance under sleep loss',
+    factTwo: 'Longitudinal sleep history and recovery context',
+    source: 'https://pubmed.ncbi.nlm.nih.gov/39006249/',
+    scopeLabel: 'Performance signal',
+    scopeValue: 'sleep loss + readiness context'
+  }
+};
+
+const evidenceConsole = document.querySelector('#evidence-console');
+const evidenceTabs = [...document.querySelectorAll('.evidence-tab')];
+const evidenceCopy = document.querySelector('#evidence-copy');
+const evidenceKicker = document.querySelector('#evidence-kicker');
+const evidenceTitle = document.querySelector('#evidence-title');
+const evidenceBody = document.querySelector('#evidence-body');
+const evidenceFactOne = document.querySelector('#evidence-fact-one');
+const evidenceFactTwo = document.querySelector('#evidence-fact-two');
+const evidenceSource = document.querySelector('#evidence-source');
+const evidenceScopeLabel = document.querySelector('#evidence-scope-label');
+const evidenceScopeValue = document.querySelector('#evidence-scope-value');
+let evidenceIndex = 0;
+let evidenceTimer = null;
+let evidenceHasInteraction = false;
+
+const setEvidence = (key, userInitiated = false) => {
+  const next = evidenceData[key];
+  if (!next) return;
+
+  if (userInitiated) evidenceHasInteraction = true;
+
+  evidenceTabs.forEach((tab, index) => {
+    const active = tab.dataset.evidence === key;
+    tab.classList.toggle('active', active);
+    tab.setAttribute('aria-selected', String(active));
+    if (active) evidenceIndex = index;
+  });
+
+  evidenceCopy?.classList.remove('is-switching');
+  if (evidenceCopy && !reduceMotion) {
+    void evidenceCopy.offsetWidth;
+    evidenceCopy.classList.add('is-switching');
+  }
+
+  if (evidenceKicker) evidenceKicker.textContent = next.kicker;
+  if (evidenceTitle) evidenceTitle.textContent = next.title;
+  if (evidenceBody) evidenceBody.textContent = next.body;
+  if (evidenceFactOne) evidenceFactOne.textContent = next.factOne;
+  if (evidenceFactTwo) evidenceFactTwo.textContent = next.factTwo;
+  if (evidenceSource) evidenceSource.href = next.source;
+  if (evidenceScopeLabel) evidenceScopeLabel.textContent = next.scopeLabel;
+  if (evidenceScopeValue) evidenceScopeValue.textContent = next.scopeValue;
+};
+
+evidenceTabs.forEach((tab) => {
+  tab.addEventListener('click', () => setEvidence(tab.dataset.evidence, true));
+  tab.addEventListener('focus', () => {
+    evidenceHasInteraction = true;
+  });
+});
+
+const startEvidenceCycle = () => {
+  if (reduceMotion || !evidenceConsole || evidenceTimer) return;
+  evidenceTimer = window.setInterval(() => {
+    if (evidenceHasInteraction || document.hidden) return;
+    evidenceIndex = (evidenceIndex + 1) % evidenceTabs.length;
+    setEvidence(evidenceTabs[evidenceIndex]?.dataset.evidence);
+  }, 5200);
+};
+
+if (evidenceConsole && 'IntersectionObserver' in window) {
+  const evidenceObserver = new IntersectionObserver((entries) => {
+    if (entries.some((entry) => entry.isIntersecting)) {
+      startEvidenceCycle();
+      evidenceObserver.disconnect();
+    }
+  }, { threshold: 0.35 });
+  evidenceObserver.observe(evidenceConsole);
+}
+
+if (evidenceConsole && !reduceMotion && window.matchMedia('(pointer:fine)').matches) {
+  const scope = evidenceConsole.querySelector('.evidence-scope');
+  evidenceConsole.addEventListener('pointermove', (event) => {
+    if (!scope) return;
+    const rect = evidenceConsole.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width - 0.5) * 4;
+    const y = ((event.clientY - rect.top) / rect.height - 0.5) * 4;
+    scope.style.transform = `perspective(800px) rotateX(${-y}deg) rotateY(${x}deg)`;
+  });
+  evidenceConsole.addEventListener('pointerleave', () => {
+    if (scope) scope.style.transform = '';
+  });
+}
 
 const navLinks = document.querySelectorAll('.desktop-nav a[href^="#"], .mobile-nav a[href^="#"]');
 const sections = [...navLinks]
