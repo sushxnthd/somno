@@ -1,0 +1,64 @@
+name: Bootstrap sanitized Somno source
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/bootstrap-source.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    if: github.repository == 'sushxnthd/somno'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Download production source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE_ID='1Sv61ELDdeBINt8-7NSwl295-s-hMgV9R'
+          curl --fail --location --retry 3 --output /tmp/somno.zip "https://drive.usercontent.google.com/download?id=${FILE_ID}&export=download&confirm=t"
+          unzip -t /tmp/somno.zip >/dev/null
+      - name: Extract and sanitize source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/somno-extract
+          mkdir -p /tmp/somno-extract
+          unzip -q /tmp/somno.zip -d /tmp/somno-extract
+          SRC="$(find /tmp/somno-extract -type f -name package.json -not -path '*/node_modules/*' -printf '%h\n' | head -n1)"
+          test -n "$SRC"
+          test -f "$SRC/App.tsx"
+          find "$SRC" -type f \( -name '*.jks' -o -name '*.keystore' -o -name '*.p8' -o -name '*.p12' -o -name '*.key' -o -name '*.pem' -o -name '*.mobileprovision' -o -name 'google-services.json' -o -name '*.apk' -o -name '*.aab' \) -delete
+          rm -rf "$SRC/.git" "$SRC/.expo" "$SRC/node_modules" "$SRC/dist" "$SRC/web-build" "$SRC/android" "$SRC/ios" "$SRC/.gradle" "$SRC/.kotlin" "$SRC/listing/raw" "$SRC/.claude" "$SRC/.cursor" "$SRC/.agent"
+          rm -f "$SRC/.env"
+          find "$SRC" -maxdepth 1 -type f -name '.env.*' ! -name '.env.example' -delete
+          rm -f "$SRC/CLAUDE.md" "$SRC/AGENTS.md"
+          find "$SRC" -type d -name '__pycache__' -prune -exec rm -rf {} +
+          find "$SRC" -type f \( -name '*.pyc' -o -name '*.tgz' \) -delete
+          cp README.md /tmp/public-readme.md
+          rm -rf App.tsx app.json eas.json index.ts package.json package-lock.json tsconfig.json src modules plugins scripts e2e assets legal listing supabase PLAY_STORE.md .env.example .nvmrc .gitignore
+          rsync -a --exclude='.github/' "$SRC/" ./
+          cp /tmp/public-readme.md README.md
+          test ! -e .env
+          test ! -d android
+          test ! -d ios
+          test -z "$(find . -type f \( -name '*.jks' -o -name '*.keystore' -o -name '*.p8' -o -name '*.p12' -o -name '*.pem' -o -name '*.key' -o -name '*.apk' -o -name '*.aab' -o -name 'google-services.json' \) -print -quit)"
+          test -f src/engine/sdi.ts
+          test -f modules/smart-wake-alarm/android/src/main/java/expo/modules/smartwakealarm/AlarmScheduler.kt
+      - name: Commit sanitized source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/bootstrap-source.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Publish sanitized Somno v27 source'
+          git push origin HEAD:main
