@@ -1,0 +1,47 @@
+name: Publish Android builds
+
+on:
+  push:
+    paths:
+      - '.github/workflows/publish-builds.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download APK and AAB
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 --retry-delay 2 \
+            'https://drive.usercontent.google.com/download?id=1Hxs56msv_LQAAQiflPZtFecCLEZYW_1L&export=download&confirm=t' \
+            -o somno-v27-release.apk
+          curl -fL --retry 3 --retry-delay 2 \
+            'https://drive.usercontent.google.com/download?id=1IVuntTupcGTI7UyE_Js_8bSvL62fSXGL&export=download&confirm=t' \
+            -o somno-v27-release.aab
+          test -s somno-v27-release.apk
+          test -s somno-v27-release.aab
+          file somno-v27-release.apk somno-v27-release.aab
+          ls -lh somno-v27-release.apk somno-v27-release.aab
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view v27 >/dev/null 2>&1; then
+            gh release upload v27 somno-v27-release.apk somno-v27-release.aab --clobber
+          else
+            gh release create v27 \
+              somno-v27-release.apk \
+              somno-v27-release.aab \
+              --title 'Somno v27' \
+              --notes 'Somno v27 Android release. APK for direct installation and AAB for Android app distribution.'
+          fi
