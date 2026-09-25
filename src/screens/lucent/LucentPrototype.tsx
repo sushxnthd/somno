@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { LucentCameraScan, type LucentCaptureSummary } from './LucentCameraScan';
 
 type Surface = 'today' | 'history' | 'profile';
 type ScanStage = 'idle' | 'scan' | 'result';
@@ -368,7 +369,7 @@ function ActiveScan({ onDone }: { onDone: () => void }) {
   );
 }
 
-function Result({ onAgain }: { onAgain: () => void }) {
+function Result({ onAgain, capture }: { onAgain: () => void; capture: LucentCaptureSummary | null }) {
   return (
     <ScrollView contentContainerStyle={styles.resultScroll} showsVerticalScrollIndicator={false}>
       <View style={styles.resultTop}>
@@ -398,7 +399,16 @@ function Result({ onAgain }: { onAgain: () => void }) {
       <Metric label="Vigilance" value="+12%" note="relative to learned baseline" accent={palette.acid} />
       <Metric label="Autonomic response" value="Stable" note="pupil-response pattern" accent={palette.mint} />
       <Metric label="Pulse" value="—" note="model not connected yet" accent={palette.ice} />
-      <Metric label="Confidence" value="—" note="requires validated inference model" accent={palette.warm} />
+      <Metric
+        label="Capture"
+        value={capture?.cameraAvailable ? `${capture.frames} frames` : 'Unavailable'}
+        note={
+          capture?.cameraAvailable
+            ? `${capture.fps.toFixed(1)} fps · ${(capture.durationMs / 1000).toFixed(1)} sec`
+            : 'No camera data captured'
+        }
+        accent={palette.warm}
+      />
 
       <View style={styles.callout}>
         <Text style={styles.calloutKicker}>LUCENT GAP</Text>
@@ -488,11 +498,13 @@ export function LucentPrototype() {
   const [surface, setSurface] = useState<Surface>('today');
   const [scanStage, setScanStage] = useState<ScanStage>('idle');
   const [hasResult, setHasResult] = useState(false);
+  const [capture, setCapture] = useState<LucentCaptureSummary | null>(null);
 
   if (scanStage === 'scan') {
     return (
-      <ActiveScan
-        onDone={() => {
+      <LucentCameraScan
+        onDone={(summary) => {
+          setCapture(summary);
           setHasResult(true);
           setScanStage('result');
         }}
@@ -510,7 +522,7 @@ export function LucentPrototype() {
               <Text style={styles.closeText}>×</Text>
             </Pressable>
           </View>
-          <Result onAgain={() => setScanStage('scan')} />
+          <Result capture={capture} onAgain={() => setScanStage('scan')} />
         </View>
       </SafeAreaView>
     );
