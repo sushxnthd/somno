@@ -697,7 +697,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   scanCtaText: { color: palette.text, fontFamily: 'Figtree_600SemiBold', fontSize: 12 },
-  scanArrow: { color: palette.acid, fontSize: 18, lineHeight: 18 },
+  scanArrow: { color: palette.acid, fontSize: 18, lineHeight: 22 },
   readingHero: {
     paddingVertical: 30,
     flexDirection: 'row',
@@ -860,7 +860,7 @@ const styles = StyleSheet.create({
   },
   prototypeText: { color: palette.acid, fontFamily: 'Figtree_700Bold', fontSize: 8.5, letterSpacing: 1.2 },
   resultHero: { marginTop: 18, flexDirection: 'row', alignItems: 'flex-end', gap: 16 },
-  resultScore: { color: palette.text, fontFamily: 'InstrumentSerif_400Regular', fontSize: 104, lineHeight: 106 },
+  resultScore: { color: palette.text, fontFamily: 'InstrumentSerif_400Regular', fontSize: 104, lineHeight: 116 },
   resultWordWrap: { paddingBottom: 14, flex: 1 },
   resultWord: { color: palette.acid, fontFamily: 'Figtree_700Bold', fontSize: 22 },
   resultSubtitle: { marginTop: 4, color: palette.faint, fontFamily: 'Figtree_400Regular', fontSize: 10.5, lineHeight: 15 },
