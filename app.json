@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "Somno",
+    "name": "Lucent",
     "slug": "somno",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#07060C",
-    "scheme": "somno",
+    "backgroundColor": "#050706",
+    "scheme": "lucent",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.somno.app"
@@ -17,7 +17,7 @@
       "versionCode": 1,
       "allowBackup": false,
       "adaptiveIcon": {
-        "backgroundColor": "#07060C",
+        "backgroundColor": "#050706",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -59,7 +59,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Somno uses the front camera for the face scan. The image is measured on this device and never leaves it.",
+          "cameraPermission": "Lucent uses the front camera for the 5-second state scan. Capture is processed on this device by default.",
           "microphonePermission": false,
           "recordAudioAndroid": false,
           "barcodeScannerEnabled": false
