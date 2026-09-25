@@ -142,8 +142,7 @@ function Today({
       <View style={styles.hero}>
         <Text style={styles.eyebrow}>YOUR CURRENT STATE</Text>
         <Text style={styles.heroTitle}>
-          Know how ready you are,{'
-'}
+          Know how ready you are,{`\n`}
           <Text style={styles.heroTitleAccent}>in five seconds.</Text>
         </Text>
         <Text style={styles.heroBody}>
