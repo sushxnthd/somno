@@ -272,3 +272,36 @@ footer { border-top: 1px solid var(--line); padding: 34px 0 42px; }
   .footer-grid { align-items: flex-start; flex-direction: column; }
   .footer-links { flex-wrap: wrap; gap: 16px 22px; }
 }
+
+/* Navigation interaction fixes */
+#working,
+#science,
+#impact,
+#privacy {
+  scroll-margin-top: 92px;
+}
+
+.desktop-nav a.nav-active {
+  color: #f7f5fb;
+}
+
+.desktop-nav a:focus-visible,
+.text-link:focus-visible,
+.brand:focus-visible,
+.menu-button:focus-visible {
+  outline: 2px solid rgba(154,135,255,.72);
+  outline-offset: 5px;
+}
+
+@media (max-width: 1040px) {
+  .menu-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .mobile-nav:not([hidden]) {
+    display: grid;
+  }
+}
