@@ -169,37 +169,140 @@
           </article>
         </div>
 
-        <div class="evidence-console reveal" id="evidence-console">
-          <div class="evidence-console-inner">
-            <div class="evidence-topbar">
-              <span>Interactive evidence explorer</span>
-              <div class="evidence-tabs" role="tablist" aria-label="Scientific evidence families">
-                <button class="evidence-tab active" type="button" role="tab" aria-selected="true" data-evidence="pvt">Reaction time</button>
-                <button class="evidence-tab" type="button" role="tab" aria-selected="false" data-evidence="kss">KSS</button>
-                <button class="evidence-tab" type="button" role="tab" aria-selected="false" data-evidence="ocular">Ocular</button>
-                <button class="evidence-tab" type="button" role="tab" aria-selected="false" data-evidence="performance">Performance</button>
+
+        <div class="model-inspector reveal" id="model-inspector">
+          <div class="model-inspector-topbar">
+            <div>
+              <span class="model-inspector-label">Live SDI model inspector</span>
+              <span class="model-inspector-status"><i></i> Runs locally in your browser</span>
+            </div>
+            <a href="https://github.com/sushxnthd/somno/blob/main/src/engine/sdi.ts" target="_blank" rel="noreferrer">View scoring source <span>↗</span></a>
+          </div>
+
+          <div class="model-inspector-grid">
+            <div class="model-controls">
+              <div class="model-intro">
+                <p>Change the inputs and watch Somno recompute the score using the same fusion logic as the app. Positive z-scores mean more alert than your personal baseline; negative values mean worse than baseline.</p>
+                <div class="model-presets" aria-label="Example input presets">
+                  <button type="button" class="model-preset active" data-preset="baseline">Baseline</button>
+                  <button type="button" class="model-preset" data-preset="short-sleep">Short sleep</button>
+                  <button type="button" class="model-preset" data-preset="no-face">No face scan</button>
+                  <button type="button" class="model-preset" data-preset="alarm">Alarm check</button>
+                </div>
+              </div>
+
+              <div class="signal-control" data-signal="pvt">
+                <div class="signal-control-head">
+                  <label class="signal-toggle">
+                    <input id="model-pvt-enabled" type="checkbox" checked />
+                    <span aria-hidden="true"></span>
+                    <strong>Reaction time</strong>
+                  </label>
+                  <span class="signal-base-weight">base 40%</span>
+                </div>
+                <div class="signal-control-body">
+                  <label for="model-pvt-z">Normalized PVT signal <output id="model-pvt-z-out">0.0 z</output></label>
+                  <input id="model-pvt-z" type="range" min="-3" max="3" step="0.1" value="0" />
+                  <div class="signal-subcontrol">
+                    <label for="model-pvt-trials">Trials <output id="model-pvt-trials-out">9 / 9</output></label>
+                    <input id="model-pvt-trials" type="range" min="5" max="9" step="1" value="9" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="signal-control" data-signal="face">
+                <div class="signal-control-head">
+                  <label class="signal-toggle">
+                    <input id="model-face-enabled" type="checkbox" checked />
+                    <span aria-hidden="true"></span>
+                    <strong>Face + ocular</strong>
+                  </label>
+                  <span class="signal-base-weight">base 25%</span>
+                </div>
+                <div class="signal-control-body">
+                  <label for="model-face-z">Normalized face signal <output id="model-face-z-out">0.0 z</output></label>
+                  <input id="model-face-z" type="range" min="-3" max="3" step="0.1" value="0" />
+                  <label class="quality-check">
+                    <input id="model-face-ocular" type="checkbox" checked />
+                    <span>Full ocular measures available</span>
+                    <small>Off simulates the lower-precision photometric fallback.</small>
+                  </label>
+                </div>
+              </div>
+
+              <div class="signal-control" data-signal="kss">
+                <div class="signal-control-head">
+                  <label class="signal-toggle">
+                    <input id="model-kss-enabled" type="checkbox" checked />
+                    <span aria-hidden="true"></span>
+                    <strong>KSS</strong>
+                  </label>
+                  <span class="signal-base-weight">base 15%</span>
+                </div>
+                <div class="signal-control-body">
+                  <label for="model-kss">Sleepiness rating <output id="model-kss-out">5 / 9</output></label>
+                  <input id="model-kss" type="range" min="1" max="9" step="1" value="5" />
+                </div>
+              </div>
+
+              <div class="signal-control" data-signal="debt">
+                <div class="signal-control-head">
+                  <label class="signal-toggle">
+                    <input id="model-debt-enabled" type="checkbox" checked />
+                    <span aria-hidden="true"></span>
+                    <strong>Sleep debt</strong>
+                  </label>
+                  <span class="signal-base-weight">base 20%</span>
+                </div>
+                <div class="signal-control-body">
+                  <label for="model-debt">Composite debt <output id="model-debt-out">0.0 h</output></label>
+                  <input id="model-debt" type="range" min="0" max="12" step="0.5" value="0" />
+                </div>
               </div>
             </div>
-            <div class="evidence-stage">
-              <div class="evidence-visual" aria-hidden="true">
-                <div class="evidence-scope">
-                  <span class="evidence-scope-label" id="evidence-scope-label">PVT signal</span>
-                  <div class="evidence-wave"></div>
-                  <span class="evidence-dot dot-one"></span>
-                  <span class="evidence-dot dot-two"></span>
-                  <span class="evidence-dot dot-three"></span>
-                  <span class="evidence-scope-value" id="evidence-scope-value">response speed + lapses</span>
+
+            <div class="model-output" aria-live="polite">
+              <div class="score-readout">
+                <div>
+                  <span>Computed SDI</span>
+                  <strong id="model-sdi">50</strong>
+                </div>
+                <div class="score-meta">
+                  <span id="model-confidence">High confidence</span>
+                  <small id="model-signals-used">4 signals used</small>
                 </div>
               </div>
-              <div class="evidence-copy-panel" id="evidence-copy">
-                <div class="evidence-kicker" id="evidence-kicker">Psychomotor vigilance</div>
-                <h3 id="evidence-title">Sleep loss shows up in response speed.</h3>
-                <p id="evidence-body">Brief psychomotor vigilance testing has been studied as a practical way to retain sensitivity to sleep-loss-related changes in attention. Somno uses the same measurement family to track response speed, lapses, anticipations and variability against a personal baseline.</p>
-                <div class="evidence-facts">
-                  <div class="evidence-fact"><span>Research signal</span><strong id="evidence-fact-one">Reaction speed, lapses and sustained attention</strong></div>
-                  <div class="evidence-fact"><span>Somno layer</span><strong id="evidence-fact-two">Highest-weight behavioral input in the SDI</strong></div>
+
+              <div class="model-equation" aria-label="Current SDI equation">
+                <span>SDI</span>
+                <code id="model-equation">50 + 10 × 0.000 = 50</code>
+              </div>
+
+              <div class="contribution-table">
+                <div class="contribution-head">
+                  <span>Signal</span><span>z</span><span>Effective weight</span><span>Contribution</span>
                 </div>
-                <a class="evidence-source" id="evidence-source" href="https://pubmed.ncbi.nlm.nih.gov/22025811/" target="_blank" rel="noreferrer">Read the research <span>→</span></a>
+                <div class="contribution-row" data-output="pvt">
+                  <strong>Reaction time</strong><span class="z-value">0.00</span>
+                  <span class="weight-cell"><i></i><b>40.0%</b></span><span class="contribution-value">0.000</span>
+                </div>
+                <div class="contribution-row" data-output="face">
+                  <strong>Face + ocular</strong><span class="z-value">0.00</span>
+                  <span class="weight-cell"><i></i><b>25.0%</b></span><span class="contribution-value">0.000</span>
+                </div>
+                <div class="contribution-row" data-output="kss">
+                  <strong>KSS</strong><span class="z-value">0.00</span>
+                  <span class="weight-cell"><i></i><b>15.0%</b></span><span class="contribution-value">0.000</span>
+                </div>
+                <div class="contribution-row" data-output="debt">
+                  <strong>Sleep debt</strong><span class="z-value">0.00</span>
+                  <span class="weight-cell"><i></i><b>20.0%</b></span><span class="contribution-value">0.000</span>
+                </div>
+              </div>
+
+              <div class="model-note">
+                <span>What is happening</span>
+                <p id="model-note">All four signals are available, so the base weights remain 40 / 25 / 15 / 20.</p>
               </div>
             </div>
           </div>
