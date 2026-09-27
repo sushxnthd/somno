@@ -14,6 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="motion.css" />
+  <link rel="stylesheet" href="sdi-lab.css" />
 </head>
 <body>
   <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -170,139 +171,124 @@
         </div>
 
 
-        <div class="model-inspector reveal" id="model-inspector">
-          <div class="model-inspector-topbar">
+        <div class="sdi-lab reveal" id="sdi-lab">
+          <div class="sdi-lab__header">
             <div>
-              <span class="model-inspector-label">Live SDI model inspector</span>
-              <span class="model-inspector-status"><i></i> Runs locally in your browser</span>
+              <span class="sdi-lab__eyebrow">SDI model sandbox</span>
+              <h3>Inspect the fusion model.</h3>
             </div>
-            <a href="https://github.com/sushxnthd/somno/blob/main/src/engine/sdi.ts" target="_blank" rel="noreferrer">View scoring source <span>↗</span></a>
+            <a href="https://github.com/sushxnthd/somno/blob/main/src/engine/sdi.ts" target="_blank" rel="noreferrer">src/engine/sdi.ts ↗</a>
           </div>
 
-          <div class="model-inspector-grid">
-            <div class="model-controls">
-              <div class="model-intro">
-                <p>Change the inputs and watch Somno recompute the score using the same fusion logic as the app. Positive z-scores mean more alert than your personal baseline; negative values mean worse than baseline.</p>
-                <div class="model-presets" aria-label="Example input presets">
-                  <button type="button" class="model-preset active" data-preset="baseline">Baseline</button>
-                  <button type="button" class="model-preset" data-preset="short-sleep">Short sleep</button>
-                  <button type="button" class="model-preset" data-preset="no-face">No face scan</button>
-                  <button type="button" class="model-preset" data-preset="alarm">Alarm check</button>
+          <div class="sdi-lab__body">
+            <div class="sdi-lab__controls">
+              <p class="sdi-lab__intro">Adjust the four inputs below. The readout recomputes with the same weighting, precision scaling and missing-signal renormalization used by the app.</p>
+
+              <div class="sdi-input" data-signal="pvt">
+                <div class="sdi-input__top">
+                  <label class="sdi-switch">
+                    <input id="lab-pvt-on" type="checkbox" checked />
+                    <span></span>
+                    <b>Reaction time</b>
+                  </label>
+                  <code>base 0.40</code>
+                </div>
+                <div class="sdi-input__row">
+                  <label for="lab-pvt-z">z-score <output id="lab-pvt-z-out">0.0</output></label>
+                  <input id="lab-pvt-z" type="range" min="-3" max="3" step="0.1" value="0" />
+                </div>
+                <div class="sdi-input__row">
+                  <label for="lab-pvt-trials">trials <output id="lab-pvt-trials-out">9</output></label>
+                  <input id="lab-pvt-trials" type="range" min="5" max="9" step="1" value="9" />
                 </div>
               </div>
 
-              <div class="signal-control" data-signal="pvt">
-                <div class="signal-control-head">
-                  <label class="signal-toggle">
-                    <input id="model-pvt-enabled" type="checkbox" checked />
-                    <span aria-hidden="true"></span>
-                    <strong>Reaction time</strong>
+              <div class="sdi-input" data-signal="face">
+                <div class="sdi-input__top">
+                  <label class="sdi-switch">
+                    <input id="lab-face-on" type="checkbox" checked />
+                    <span></span>
+                    <b>Face + ocular</b>
                   </label>
-                  <span class="signal-base-weight">base 40%</span>
+                  <code>base 0.25</code>
                 </div>
-                <div class="signal-control-body">
-                  <label for="model-pvt-z">Normalized PVT signal <output id="model-pvt-z-out">0.0 z</output></label>
-                  <input id="model-pvt-z" type="range" min="-3" max="3" step="0.1" value="0" />
-                  <div class="signal-subcontrol">
-                    <label for="model-pvt-trials">Trials <output id="model-pvt-trials-out">9 / 9</output></label>
-                    <input id="model-pvt-trials" type="range" min="5" max="9" step="1" value="9" />
-                  </div>
+                <div class="sdi-input__row">
+                  <label for="lab-face-z">z-score <output id="lab-face-z-out">0.0</output></label>
+                  <input id="lab-face-z" type="range" min="-3" max="3" step="0.1" value="0" />
+                </div>
+                <label class="sdi-check">
+                  <input id="lab-face-full" type="checkbox" checked />
+                  <span>full ocular measures available</span>
+                </label>
+              </div>
+
+              <div class="sdi-input" data-signal="kss">
+                <div class="sdi-input__top">
+                  <label class="sdi-switch">
+                    <input id="lab-kss-on" type="checkbox" checked />
+                    <span></span>
+                    <b>KSS</b>
+                  </label>
+                  <code>base 0.15</code>
+                </div>
+                <div class="sdi-input__row">
+                  <label for="lab-kss">rating <output id="lab-kss-out">5</output></label>
+                  <input id="lab-kss" type="range" min="1" max="9" step="1" value="5" />
                 </div>
               </div>
 
-              <div class="signal-control" data-signal="face">
-                <div class="signal-control-head">
-                  <label class="signal-toggle">
-                    <input id="model-face-enabled" type="checkbox" checked />
-                    <span aria-hidden="true"></span>
-                    <strong>Face + ocular</strong>
+              <div class="sdi-input" data-signal="debt">
+                <div class="sdi-input__top">
+                  <label class="sdi-switch">
+                    <input id="lab-debt-on" type="checkbox" checked />
+                    <span></span>
+                    <b>Sleep debt</b>
                   </label>
-                  <span class="signal-base-weight">base 25%</span>
+                  <code>base 0.20</code>
                 </div>
-                <div class="signal-control-body">
-                  <label for="model-face-z">Normalized face signal <output id="model-face-z-out">0.0 z</output></label>
-                  <input id="model-face-z" type="range" min="-3" max="3" step="0.1" value="0" />
-                  <label class="quality-check">
-                    <input id="model-face-ocular" type="checkbox" checked />
-                    <span>Full ocular measures available</span>
-                    <small>Off simulates the lower-precision photometric fallback.</small>
-                  </label>
-                </div>
-              </div>
-
-              <div class="signal-control" data-signal="kss">
-                <div class="signal-control-head">
-                  <label class="signal-toggle">
-                    <input id="model-kss-enabled" type="checkbox" checked />
-                    <span aria-hidden="true"></span>
-                    <strong>KSS</strong>
-                  </label>
-                  <span class="signal-base-weight">base 15%</span>
-                </div>
-                <div class="signal-control-body">
-                  <label for="model-kss">Sleepiness rating <output id="model-kss-out">5 / 9</output></label>
-                  <input id="model-kss" type="range" min="1" max="9" step="1" value="5" />
-                </div>
-              </div>
-
-              <div class="signal-control" data-signal="debt">
-                <div class="signal-control-head">
-                  <label class="signal-toggle">
-                    <input id="model-debt-enabled" type="checkbox" checked />
-                    <span aria-hidden="true"></span>
-                    <strong>Sleep debt</strong>
-                  </label>
-                  <span class="signal-base-weight">base 20%</span>
-                </div>
-                <div class="signal-control-body">
-                  <label for="model-debt">Composite debt <output id="model-debt-out">0.0 h</output></label>
-                  <input id="model-debt" type="range" min="0" max="12" step="0.5" value="0" />
+                <div class="sdi-input__row">
+                  <label for="lab-debt">hours <output id="lab-debt-out">0.0</output></label>
+                  <input id="lab-debt" type="range" min="0" max="12" step="0.5" value="0" />
                 </div>
               </div>
             </div>
 
-            <div class="model-output" aria-live="polite">
-              <div class="score-readout">
+            <div class="sdi-lab__readout">
+              <div class="sdi-score">
+                <span>computed SDI</span>
+                <strong id="lab-sdi">50</strong>
                 <div>
-                  <span>Computed SDI</span>
-                  <strong id="model-sdi">50</strong>
-                </div>
-                <div class="score-meta">
-                  <span id="model-confidence">High confidence</span>
-                  <small id="model-signals-used">4 signals used</small>
+                  <b id="lab-confidence">high confidence</b>
+                  <small id="lab-count">4 signals</small>
                 </div>
               </div>
 
-              <div class="model-equation" aria-label="Current SDI equation">
-                <span>SDI</span>
-                <code id="model-equation">50 + 10 × 0.000 = 50</code>
+              <div class="sdi-code">
+                <span>live equation</span>
+                <code id="lab-equation">50 + 10 × 0.000 = 50</code>
               </div>
 
-              <div class="contribution-table">
-                <div class="contribution-head">
-                  <span>Signal</span><span>z</span><span>Effective weight</span><span>Contribution</span>
+              <div class="sdi-table" role="table" aria-label="Current signal contributions">
+                <div class="sdi-table__head" role="row">
+                  <span>signal</span><span>z</span><span>weight</span><span>term</span>
                 </div>
-                <div class="contribution-row" data-output="pvt">
-                  <strong>Reaction time</strong><span class="z-value">0.00</span>
-                  <span class="weight-cell"><i></i><b>40.0%</b></span><span class="contribution-value">0.000</span>
+                <div class="sdi-table__row" data-row="pvt" role="row">
+                  <b>reaction</b><code data-z>0.00</code><code data-weight>40.0%</code><code data-term>0.000</code>
                 </div>
-                <div class="contribution-row" data-output="face">
-                  <strong>Face + ocular</strong><span class="z-value">0.00</span>
-                  <span class="weight-cell"><i></i><b>25.0%</b></span><span class="contribution-value">0.000</span>
+                <div class="sdi-table__row" data-row="face" role="row">
+                  <b>face</b><code data-z>0.00</code><code data-weight>25.0%</code><code data-term>0.000</code>
                 </div>
-                <div class="contribution-row" data-output="kss">
-                  <strong>KSS</strong><span class="z-value">0.00</span>
-                  <span class="weight-cell"><i></i><b>15.0%</b></span><span class="contribution-value">0.000</span>
+                <div class="sdi-table__row" data-row="kss" role="row">
+                  <b>KSS</b><code data-z>0.00</code><code data-weight>15.0%</code><code data-term>0.000</code>
                 </div>
-                <div class="contribution-row" data-output="debt">
-                  <strong>Sleep debt</strong><span class="z-value">0.00</span>
-                  <span class="weight-cell"><i></i><b>20.0%</b></span><span class="contribution-value">0.000</span>
+                <div class="sdi-table__row" data-row="debt" role="row">
+                  <b>debt</b><code data-z>0.00</code><code data-weight>20.0%</code><code data-term>0.000</code>
                 </div>
               </div>
 
-              <div class="model-note">
-                <span>What is happening</span>
-                <p id="model-note">All four signals are available, so the base weights remain 40 / 25 / 15 / 20.</p>
+              <div class="sdi-status">
+                <span>model state</span>
+                <p id="lab-status">All four channels are active at full precision.</p>
               </div>
             </div>
           </div>
