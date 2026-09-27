@@ -10,6 +10,7 @@ scrollProgress.setAttribute('aria-hidden', 'true');
 document.body.appendChild(scrollProgress);
 
 let lastScrollY = window.scrollY;
+let headerAnchorY = window.scrollY;
 let scrollTicking = false;
 
 const mobileMenuOpen = () => menuButton?.getAttribute('aria-expanded') === 'true';
@@ -17,14 +18,16 @@ const mobileMenuOpen = () => menuButton?.getAttribute('aria-expanded') === 'true
 const closeMobileMenu = () => {
   if (!mobileNav) return;
   menuButton?.setAttribute('aria-expanded', 'false');
+  menuButton?.setAttribute('aria-label', 'Open navigation');
   mobileNav.hidden = true;
   mobileNav.setAttribute('aria-hidden', 'true');
   mobileNav.style.display = 'none';
 };
 
 const openMobileMenu = () => {
-  if (!mobileNav || !window.matchMedia('(max-width: 720px)').matches) return;
+  if (!mobileNav || !window.matchMedia('(max-width: 1040px)').matches) return;
   menuButton?.setAttribute('aria-expanded', 'true');
+  menuButton?.setAttribute('aria-label', 'Close navigation');
   mobileNav.hidden = false;
   mobileNav.setAttribute('aria-hidden', 'false');
   mobileNav.style.display = 'grid';
@@ -42,15 +45,20 @@ const updateScrollUI = () => {
   header?.classList.toggle('scrolled', y > 18);
 
   if (header) {
-    if (y < 80 || mobileMenuOpen()) {
+    if (y < 96 || mobileMenuOpen()) {
       header.classList.remove('header-hidden');
       header.classList.add('header-visible');
-    } else if (delta > 7 && y > 120) {
+      headerAnchorY = y;
+    } else if (delta > 0 && y > 180 && y - headerAnchorY > 72) {
       header.classList.add('header-hidden');
       header.classList.remove('header-visible');
-    } else if (delta < -5) {
+      headerAnchorY = y;
+    } else if (delta < 0 && headerAnchorY - y > 30) {
       header.classList.remove('header-hidden');
       header.classList.add('header-visible');
+      headerAnchorY = y;
+    } else if ((delta > 0 && y < headerAnchorY) || (delta < 0 && y > headerAnchorY)) {
+      headerAnchorY = y;
     }
   }
 
@@ -79,7 +87,7 @@ mobileNav?.querySelectorAll('a').forEach((link) => {
 });
 
 window.addEventListener('resize', () => {
-  if (!window.matchMedia('(max-width: 720px)').matches) closeMobileMenu();
+  if (!window.matchMedia('(max-width: 1040px)').matches) closeMobileMenu();
 }, { passive: true });
 
 const revealItems = document.querySelectorAll('.reveal');
@@ -297,29 +305,65 @@ featureLines.forEach((line) => {
   render();
 })();
 
-const navLinks = document.querySelectorAll('.desktop-nav a[href^="#"], .mobile-nav a[href^="#"]');
-const sections = [...navLinks]
-  .map((link) => document.querySelector(link.getAttribute('href')))
-  .filter(Boolean);
+const navLinks = [...document.querySelectorAll('.desktop-nav a[href^="#"], .mobile-nav a[href^="#"]')];
+const navSectionIds = [...new Set(navLinks.map((link) => link.getAttribute('href')).filter(Boolean))];
+const navSections = navSectionIds
+  .map((id) => document.querySelector(id))
+  .filter(Boolean)
+  .sort((a, b) => a.offsetTop - b.offsetTop);
 
-if ('IntersectionObserver' in window && sections.length) {
-  const sectionObserver = new IntersectionObserver((entries) => {
-    const visible = entries
-      .filter((entry) => entry.isIntersecting)
-      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+let activeNavId = null;
 
-    if (!visible) return;
-    const id = `#${visible.target.id}`;
-    navLinks.forEach((link) => {
-      const active = link.getAttribute('href') === id;
-      link.classList.toggle('nav-active', active);
-      if (active) link.setAttribute('aria-current', 'page');
-      else link.removeAttribute('aria-current');
-    });
-  }, { threshold: [0.22, 0.4, 0.6], rootMargin: '-18% 0px -48% 0px' });
+const setActiveNav = (id) => {
+  if (activeNavId === id) return;
+  activeNavId = id;
+  navLinks.forEach((link) => {
+    const active = link.getAttribute('href') === id;
+    link.classList.toggle('nav-active', active);
+    if (active) link.setAttribute('aria-current', 'location');
+    else link.removeAttribute('aria-current');
+  });
+};
 
-  sections.forEach((section) => sectionObserver.observe(section));
-}
+const updateActiveNav = () => {
+  if (!navSections.length) return;
+
+  const headerHeight = header?.offsetHeight ?? 78;
+  const marker = window.scrollY + headerHeight + Math.min(window.innerHeight * 0.22, 170);
+  const firstTop = navSections[0].offsetTop;
+
+  if (marker < firstTop) {
+    setActiveNav(null);
+    return;
+  }
+
+  let current = navSections[0];
+  for (const section of navSections) {
+    if (section.offsetTop <= marker) current = section;
+    else break;
+  }
+
+  // At the bottom of the page, keep the last navigable section selected.
+  if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 8) {
+    current = navSections[navSections.length - 1];
+  }
+
+  setActiveNav(`#${current.id}`);
+};
+
+navLinks.forEach((link) => {
+  link.addEventListener('click', () => {
+    const id = link.getAttribute('href');
+    if (id?.startsWith('#')) setActiveNav(id);
+    header?.classList.remove('header-hidden');
+    header?.classList.add('header-visible');
+    headerAnchorY = window.scrollY;
+  });
+});
+
+updateActiveNav();
+window.addEventListener('scroll', updateActiveNav, { passive: true });
+window.addEventListener('resize', updateActiveNav, { passive: true });
 
 const magneticButtons = document.querySelectorAll('.button');
 if (!reduceMotion && window.matchMedia('(pointer:fine)').matches) {
