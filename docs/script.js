@@ -202,198 +202,99 @@ featureLines.forEach((line) => {
   });
 });
 
-(function setupModelInspector() {
-  const modelInspector = document.querySelector('#model-inspector');
+(function sdiLabRuntime() {
+  const lab = document.querySelector('#sdi-lab');
+  if (!lab) return;
 
-  if (modelInspector) {
-    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-    const byId = (id) => document.getElementById(id);
+  const $ = (id) => document.getElementById(id);
+  const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+  const controls = {
+    pvtOn: $('lab-pvt-on'),
+    pvtZ: $('lab-pvt-z'),
+    pvtTrials: $('lab-pvt-trials'),
+    faceOn: $('lab-face-on'),
+    faceZ: $('lab-face-z'),
+    faceFull: $('lab-face-full'),
+    kssOn: $('lab-kss-on'),
+    kss: $('lab-kss'),
+    debtOn: $('lab-debt-on'),
+    debt: $('lab-debt')
+  };
+  const base = { pvt: 0.40, face: 0.25, kss: 0.15, debt: 0.20 };
 
-    const controls = {
-      pvtEnabled: byId('model-pvt-enabled'),
-      pvtZ: byId('model-pvt-z'),
-      pvtTrials: byId('model-pvt-trials'),
-      faceEnabled: byId('model-face-enabled'),
-      faceZ: byId('model-face-z'),
-      faceOcular: byId('model-face-ocular'),
-      kssEnabled: byId('model-kss-enabled'),
-      kss: byId('model-kss'),
-      debtEnabled: byId('model-debt-enabled'),
-      debt: byId('model-debt'),
+  const render = () => {
+    const pvtZ = Number(controls.pvtZ.value);
+    const pvtTrials = Number(controls.pvtTrials.value);
+    const faceZ = Number(controls.faceZ.value);
+    const kss = Number(controls.kss.value);
+    const debtHours = Number(controls.debt.value);
+
+    $('lab-pvt-z-out').textContent = pvtZ.toFixed(1);
+    $('lab-pvt-trials-out').textContent = String(pvtTrials);
+    $('lab-face-z-out').textContent = faceZ.toFixed(1);
+    $('lab-kss-out').textContent = String(kss);
+    $('lab-debt-out').textContent = debtHours.toFixed(1);
+
+    const precision = {
+      pvt: clamp(pvtTrials / 9, 0.5, 1),
+      face: controls.faceFull.checked ? 1 : 0.6
     };
 
-    const outputs = {
-      pvtZ: byId('model-pvt-z-out'),
-      pvtTrials: byId('model-pvt-trials-out'),
-      faceZ: byId('model-face-z-out'),
-      kss: byId('model-kss-out'),
-      debt: byId('model-debt-out'),
-      sdi: byId('model-sdi'),
-      confidence: byId('model-confidence'),
-      signalsUsed: byId('model-signals-used'),
-      equation: byId('model-equation'),
-      note: byId('model-note'),
+    const raw = {
+      pvt: controls.pvtOn.checked ? { z: pvtZ, w: base.pvt * precision.pvt } : null,
+      face: controls.faceOn.checked ? { z: faceZ, w: base.face * precision.face } : null,
+      kss: controls.kssOn.checked ? { z: (5 - kss) * 0.5, w: base.kss } : null,
+      debt: controls.debtOn.checked ? { z: clamp(-(debtHours / 2), -3, 3), w: base.debt } : null
     };
 
-    const baseWeights = { pvt: 0.40, face: 0.25, kss: 0.15, debt: 0.20 };
+    const active = Object.entries(raw).filter(([, value]) => value);
+    const weightSum = active.reduce((sum, [, value]) => sum + value.w, 0);
+    const normalized = {};
 
-    const presets = {
-      baseline: {
-        pvtEnabled: true, pvtZ: 0, pvtTrials: 9,
-        faceEnabled: true, faceZ: 0, faceOcular: true,
-        kssEnabled: true, kss: 5,
-        debtEnabled: true, debt: 0,
-      },
-      'short-sleep': {
-        pvtEnabled: true, pvtZ: -1.1, pvtTrials: 9,
-        faceEnabled: true, faceZ: -0.7, faceOcular: true,
-        kssEnabled: true, kss: 7,
-        debtEnabled: true, debt: 3.5,
-      },
-      'no-face': {
-        pvtEnabled: true, pvtZ: -0.6, pvtTrials: 9,
-        faceEnabled: false, faceZ: 0, faceOcular: true,
-        kssEnabled: true, kss: 6,
-        debtEnabled: true, debt: 2,
-      },
-      alarm: {
-        pvtEnabled: true, pvtZ: -0.9, pvtTrials: 5,
-        faceEnabled: true, faceZ: -0.4, faceOcular: false,
-        kssEnabled: true, kss: 7,
-        debtEnabled: true, debt: 2.5,
-      },
-    };
-
-    const valueOf = (el) => Number(el?.value ?? 0);
-    const checked = (el) => Boolean(el?.checked);
-
-    const setControlState = () => {
-      ['pvt', 'face', 'kss', 'debt'].forEach((key) => {
-        const enabled = checked(controls[`${key}Enabled`]);
-        modelInspector.querySelector(`.signal-control[data-signal="${key}"]`)?.classList.toggle('is-disabled', !enabled);
-      });
-    };
-
-    const rowFor = (key) => modelInspector.querySelector(`.contribution-row[data-output="${key}"]`);
-
-    const renderRow = (key, z, weight, contribution, enabled) => {
-      const row = rowFor(key);
-      if (!row) return;
-      row.classList.toggle('is-off', !enabled);
-      const zCell = row.querySelector('.z-value');
-      const weightCell = row.querySelector('.weight-cell');
-      const weightText = row.querySelector('.weight-cell b');
-      const contributionCell = row.querySelector('.contribution-value');
-      if (zCell) zCell.textContent = enabled ? z.toFixed(2) : '—';
-      if (weightCell) weightCell.style.setProperty('--weight', `${Math.max(0, weight * 100)}%`);
-      if (weightText) weightText.textContent = enabled ? `${(weight * 100).toFixed(1)}%` : '0.0%';
-      if (contributionCell) contributionCell.textContent = enabled ? contribution.toFixed(3) : '—';
-    };
-
-    const updateModelInspector = () => {
-      setControlState();
-
-      const pvtZ = valueOf(controls.pvtZ);
-      const pvtTrials = valueOf(controls.pvtTrials);
-      const faceZ = valueOf(controls.faceZ);
-      const kss = valueOf(controls.kss);
-      const debtHours = valueOf(controls.debt);
-
-      if (outputs.pvtZ) outputs.pvtZ.textContent = `${pvtZ.toFixed(1)} z`;
-      if (outputs.pvtTrials) outputs.pvtTrials.textContent = `${pvtTrials} / 9`;
-      if (outputs.faceZ) outputs.faceZ.textContent = `${faceZ.toFixed(1)} z`;
-      if (outputs.kss) outputs.kss.textContent = `${kss} / 9`;
-      if (outputs.debt) outputs.debt.textContent = `${debtHours.toFixed(1)} h`;
-
-      const precision = {
-        pvt: clamp(pvtTrials / 9, 0.5, 1),
-        face: checked(controls.faceOcular) ? 1 : 0.6,
-      };
-
-      const raw = {
-        pvt: checked(controls.pvtEnabled) ? { z: pvtZ, w: baseWeights.pvt * precision.pvt } : null,
-        face: checked(controls.faceEnabled) ? { z: faceZ, w: baseWeights.face * precision.face } : null,
-        kss: checked(controls.kssEnabled) ? { z: (5 - kss) * 0.5, w: baseWeights.kss } : null,
-        debt: checked(controls.debtEnabled) ? { z: clamp(-(debtHours / 2), -3, 3), w: baseWeights.debt } : null,
-      };
-
-      const activeEntries = Object.entries(raw).filter(([, item]) => item);
-      const weightSum = activeEntries.reduce((sum, [, item]) => sum + item.w, 0);
-      const normalized = {};
-
-      Object.entries(raw).forEach(([key, item]) => {
-        if (!item || weightSum <= 0) {
-          normalized[key] = { z: item?.z ?? 0, weight: 0, contribution: 0, enabled: Boolean(item) };
-          return;
-        }
-        const weight = item.w / weightSum;
-        normalized[key] = { z: item.z, weight, contribution: weight * item.z, enabled: true };
-      });
-
-      const weighted = Object.values(normalized).reduce((sum, item) => sum + item.contribution, 0);
-      const signalsUsed = activeEntries.length;
-      const sdi = signalsUsed === 0 ? 50 : clamp(Math.round(50 + 10 * weighted), 0, 100);
-      const confidence = signalsUsed >= 4 ? 'High' : signalsUsed >= 2 ? 'Medium' : 'Low';
-
-      if (outputs.sdi) outputs.sdi.textContent = String(sdi);
-      if (outputs.confidence) outputs.confidence.textContent = `${confidence} confidence`;
-      if (outputs.signalsUsed) outputs.signalsUsed.textContent = `${signalsUsed} signal${signalsUsed === 1 ? '' : 's'} used`;
-      if (outputs.equation) outputs.equation.textContent = `50 + 10 × ${weighted.toFixed(3)} = ${sdi}`;
-
-      ['pvt', 'face', 'kss', 'debt'].forEach((key) => {
-        const item = normalized[key];
-        renderRow(key, item.z, item.weight, item.contribution, item.enabled);
-      });
-
-      const omissions = ['pvt', 'face', 'kss', 'debt'].filter((key) => !raw[key]);
-      const qualityAdjustments = [];
-      if (raw.pvt && precision.pvt < 1) qualityAdjustments.push(`PVT precision is ${(precision.pvt * 100).toFixed(0)}% because this run has ${pvtTrials} trials`);
-      if (raw.face && precision.face < 1) qualityAdjustments.push('the face channel is at 60% precision because full ocular measures are unavailable');
-
-      let note;
-      if (signalsUsed === 0) {
-        note = 'No signal is enabled, so the engine returns the neutral fallback score of 50 with low confidence.';
-      } else if (!omissions.length && !qualityAdjustments.length) {
-        note = 'All four signals are available at full precision, so the base weights remain 40 / 25 / 15 / 20.';
-      } else {
-        const parts = [];
-        if (omissions.length) parts.push(`Missing ${omissions.join(', ')} ${omissions.length === 1 ? 'is' : 'are'} removed, then the remaining weights are renormalized to 100%`);
-        if (qualityAdjustments.length) parts.push(qualityAdjustments.join(' and '));
-        note = `${parts.join('. ')}.`;
+    Object.entries(raw).forEach(([key, value]) => {
+      if (!value || weightSum === 0) {
+        normalized[key] = { enabled: false, z: 0, w: 0, term: 0 };
+        return;
       }
-      if (outputs.note) outputs.note.textContent = note;
-
-      modelInspector.querySelectorAll('.model-preset').forEach((button) => button.classList.remove('active'));
-    };
-
-    const applyPreset = (name) => {
-      const preset = presets[name];
-      if (!preset) return;
-      controls.pvtEnabled.checked = preset.pvtEnabled;
-      controls.pvtZ.value = String(preset.pvtZ);
-      controls.pvtTrials.value = String(preset.pvtTrials);
-      controls.faceEnabled.checked = preset.faceEnabled;
-      controls.faceZ.value = String(preset.faceZ);
-      controls.faceOcular.checked = preset.faceOcular;
-      controls.kssEnabled.checked = preset.kssEnabled;
-      controls.kss.value = String(preset.kss);
-      controls.debtEnabled.checked = preset.debtEnabled;
-      controls.debt.value = String(preset.debt);
-      updateModelInspector();
-      modelInspector.querySelector(`.model-preset[data-preset="${name}"]`)?.classList.add('active');
-    };
-
-    Object.values(controls).forEach((control) => {
-      control?.addEventListener('input', updateModelInspector);
-      control?.addEventListener('change', updateModelInspector);
+      const w = value.w / weightSum;
+      normalized[key] = { enabled: true, z: value.z, w, term: w * value.z };
     });
 
-    modelInspector.querySelectorAll('.model-preset').forEach((button) => {
-      button.addEventListener('click', () => applyPreset(button.dataset.preset));
+    const weighted = Object.values(normalized).reduce((sum, item) => sum + item.term, 0);
+    const count = active.length;
+    const score = count === 0 ? 50 : clamp(Math.round(50 + 10 * weighted), 0, 100);
+    const confidence = count >= 4 ? 'high' : count >= 2 ? 'medium' : 'low';
+
+    $('lab-sdi').textContent = String(score);
+    $('lab-confidence').textContent = `${confidence} confidence`;
+    $('lab-count').textContent = `${count} signal${count === 1 ? '' : 's'}`;
+    $('lab-equation').textContent = `50 + 10 × ${weighted.toFixed(3)} = ${score}`;
+
+    ['pvt', 'face', 'kss', 'debt'].forEach((key) => {
+      const row = lab.querySelector(`[data-row="${key}"]`);
+      const block = lab.querySelector(`[data-signal="${key}"]`);
+      const item = normalized[key];
+      row.classList.toggle('is-off', !item.enabled);
+      block.classList.toggle('is-off', !raw[key]);
+      row.querySelector('[data-z]').textContent = item.enabled ? item.z.toFixed(2) : '—';
+      row.querySelector('[data-weight]').textContent = item.enabled ? `${(item.w * 100).toFixed(1)}%` : '—';
+      row.querySelector('[data-term]').textContent = item.enabled ? item.term.toFixed(3) : '—';
     });
 
-    applyPreset('baseline');
-  }
+    const notes = [];
+    const missing = Object.entries(raw).filter(([, value]) => !value).map(([key]) => key);
+    if (missing.length) notes.push(`missing channels are removed and the remaining weights renormalize to 100%`);
+    if (raw.pvt && precision.pvt < 1) notes.push(`reaction precision is ${(precision.pvt * 100).toFixed(0)}% at ${pvtTrials} trials`);
+    if (raw.face && precision.face < 1) notes.push(`face precision is 60% without full ocular measures`);
+    $('lab-status').textContent = notes.length ? notes.join('; ') + '.' : 'All four channels are active at full precision.';
+  };
+
+  Object.values(controls).forEach((control) => {
+    control.addEventListener('input', render);
+    control.addEventListener('change', render);
+  });
+
+  render();
 })();
 
 const navLinks = document.querySelectorAll('.desktop-nav a[href^="#"], .mobile-nav a[href^="#"]');
