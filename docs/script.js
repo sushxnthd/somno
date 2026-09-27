@@ -202,132 +202,199 @@ featureLines.forEach((line) => {
   });
 });
 
-const evidenceData = {
-  pvt: {
-    kicker: 'Psychomotor vigilance',
-    title: 'Sleep loss shows up in response speed.',
-    body: 'Brief psychomotor vigilance testing has been studied as a practical way to retain sensitivity to sleep-loss-related changes in attention. Somno uses the same measurement family to track response speed, lapses, anticipations and variability against a personal baseline.',
-    factOne: 'Reaction speed, lapses and sustained attention',
-    factTwo: 'Highest-weight behavioral input in the SDI',
-    source: 'https://pubmed.ncbi.nlm.nih.gov/22025811/',
-    scopeLabel: 'PVT signal',
-    scopeValue: 'response speed + lapses'
-  },
-  kss: {
-    kicker: 'Subjective sleepiness',
-    title: 'Perceived sleepiness carries measurable information.',
-    body: 'The Karolinska Sleepiness Scale is widely used in sleep research. Kaida and colleagues reported relationships between KSS ratings and behavioral plus EEG measures of sleepiness, giving Somno a compact subjective signal that complements its objective channels.',
-    factOne: 'Self-reported momentary sleepiness on a 1 to 9 scale',
-    factTwo: 'Independent subjective channel inside multimodal fusion',
-    source: 'https://pubmed.ncbi.nlm.nih.gov/16679057/',
-    scopeLabel: 'KSS signal',
-    scopeValue: 'subjective state + context'
-  },
-  ocular: {
-    kicker: 'Ocular fatigue markers',
-    title: 'The eyes reveal changes in vigilance.',
-    body: 'Controlled fatigue research has linked eyelid closure measures such as PERCLOS with degraded visual attention. Somno extends that evidence family with on-device temporal and geometric features, including closure behavior, eye geometry, motion and photometric quality.',
-    factOne: 'Eyelid closure and ocular behavior under fatigue',
-    factTwo: 'Quality-gated visual signal processed on-device',
-    source: 'https://rosap.ntl.bts.gov/view/dot/2518',
-    scopeLabel: 'Ocular signal',
-    scopeValue: 'closure + geometry + motion'
-  },
-  performance: {
-    kicker: 'Sleep and performance',
-    title: 'Sleep debt reaches beyond feeling tired.',
-    body: 'A 2024 meta-analysis reported that acute sleep deprivation can impair overall athletic performance across multiple performance domains. Somno brings recent sleep shortfall together with cognitive speed and perceived fatigue to build a broader recovery picture.',
-    factOne: 'Cognitive and physical performance under sleep loss',
-    factTwo: 'Longitudinal sleep history and recovery context',
-    source: 'https://pubmed.ncbi.nlm.nih.gov/39006249/',
-    scopeLabel: 'Performance signal',
-    scopeValue: 'sleep loss + readiness context'
+(function setupModelInspector() {
+  const modelInspector = document.querySelector('#model-inspector');
+
+  if (modelInspector) {
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+    const byId = (id) => document.getElementById(id);
+
+    const controls = {
+      pvtEnabled: byId('model-pvt-enabled'),
+      pvtZ: byId('model-pvt-z'),
+      pvtTrials: byId('model-pvt-trials'),
+      faceEnabled: byId('model-face-enabled'),
+      faceZ: byId('model-face-z'),
+      faceOcular: byId('model-face-ocular'),
+      kssEnabled: byId('model-kss-enabled'),
+      kss: byId('model-kss'),
+      debtEnabled: byId('model-debt-enabled'),
+      debt: byId('model-debt'),
+    };
+
+    const outputs = {
+      pvtZ: byId('model-pvt-z-out'),
+      pvtTrials: byId('model-pvt-trials-out'),
+      faceZ: byId('model-face-z-out'),
+      kss: byId('model-kss-out'),
+      debt: byId('model-debt-out'),
+      sdi: byId('model-sdi'),
+      confidence: byId('model-confidence'),
+      signalsUsed: byId('model-signals-used'),
+      equation: byId('model-equation'),
+      note: byId('model-note'),
+    };
+
+    const baseWeights = { pvt: 0.40, face: 0.25, kss: 0.15, debt: 0.20 };
+
+    const presets = {
+      baseline: {
+        pvtEnabled: true, pvtZ: 0, pvtTrials: 9,
+        faceEnabled: true, faceZ: 0, faceOcular: true,
+        kssEnabled: true, kss: 5,
+        debtEnabled: true, debt: 0,
+      },
+      'short-sleep': {
+        pvtEnabled: true, pvtZ: -1.1, pvtTrials: 9,
+        faceEnabled: true, faceZ: -0.7, faceOcular: true,
+        kssEnabled: true, kss: 7,
+        debtEnabled: true, debt: 3.5,
+      },
+      'no-face': {
+        pvtEnabled: true, pvtZ: -0.6, pvtTrials: 9,
+        faceEnabled: false, faceZ: 0, faceOcular: true,
+        kssEnabled: true, kss: 6,
+        debtEnabled: true, debt: 2,
+      },
+      alarm: {
+        pvtEnabled: true, pvtZ: -0.9, pvtTrials: 5,
+        faceEnabled: true, faceZ: -0.4, faceOcular: false,
+        kssEnabled: true, kss: 7,
+        debtEnabled: true, debt: 2.5,
+      },
+    };
+
+    const valueOf = (el) => Number(el?.value ?? 0);
+    const checked = (el) => Boolean(el?.checked);
+
+    const setControlState = () => {
+      ['pvt', 'face', 'kss', 'debt'].forEach((key) => {
+        const enabled = checked(controls[`${key}Enabled`]);
+        modelInspector.querySelector(`.signal-control[data-signal="${key}"]`)?.classList.toggle('is-disabled', !enabled);
+      });
+    };
+
+    const rowFor = (key) => modelInspector.querySelector(`.contribution-row[data-output="${key}"]`);
+
+    const renderRow = (key, z, weight, contribution, enabled) => {
+      const row = rowFor(key);
+      if (!row) return;
+      row.classList.toggle('is-off', !enabled);
+      const zCell = row.querySelector('.z-value');
+      const weightCell = row.querySelector('.weight-cell');
+      const weightText = row.querySelector('.weight-cell b');
+      const contributionCell = row.querySelector('.contribution-value');
+      if (zCell) zCell.textContent = enabled ? z.toFixed(2) : '—';
+      if (weightCell) weightCell.style.setProperty('--weight', `${Math.max(0, weight * 100)}%`);
+      if (weightText) weightText.textContent = enabled ? `${(weight * 100).toFixed(1)}%` : '0.0%';
+      if (contributionCell) contributionCell.textContent = enabled ? contribution.toFixed(3) : '—';
+    };
+
+    const updateModelInspector = () => {
+      setControlState();
+
+      const pvtZ = valueOf(controls.pvtZ);
+      const pvtTrials = valueOf(controls.pvtTrials);
+      const faceZ = valueOf(controls.faceZ);
+      const kss = valueOf(controls.kss);
+      const debtHours = valueOf(controls.debt);
+
+      if (outputs.pvtZ) outputs.pvtZ.textContent = `${pvtZ.toFixed(1)} z`;
+      if (outputs.pvtTrials) outputs.pvtTrials.textContent = `${pvtTrials} / 9`;
+      if (outputs.faceZ) outputs.faceZ.textContent = `${faceZ.toFixed(1)} z`;
+      if (outputs.kss) outputs.kss.textContent = `${kss} / 9`;
+      if (outputs.debt) outputs.debt.textContent = `${debtHours.toFixed(1)} h`;
+
+      const precision = {
+        pvt: clamp(pvtTrials / 9, 0.5, 1),
+        face: checked(controls.faceOcular) ? 1 : 0.6,
+      };
+
+      const raw = {
+        pvt: checked(controls.pvtEnabled) ? { z: pvtZ, w: baseWeights.pvt * precision.pvt } : null,
+        face: checked(controls.faceEnabled) ? { z: faceZ, w: baseWeights.face * precision.face } : null,
+        kss: checked(controls.kssEnabled) ? { z: (5 - kss) * 0.5, w: baseWeights.kss } : null,
+        debt: checked(controls.debtEnabled) ? { z: clamp(-(debtHours / 2), -3, 3), w: baseWeights.debt } : null,
+      };
+
+      const activeEntries = Object.entries(raw).filter(([, item]) => item);
+      const weightSum = activeEntries.reduce((sum, [, item]) => sum + item.w, 0);
+      const normalized = {};
+
+      Object.entries(raw).forEach(([key, item]) => {
+        if (!item || weightSum <= 0) {
+          normalized[key] = { z: item?.z ?? 0, weight: 0, contribution: 0, enabled: Boolean(item) };
+          return;
+        }
+        const weight = item.w / weightSum;
+        normalized[key] = { z: item.z, weight, contribution: weight * item.z, enabled: true };
+      });
+
+      const weighted = Object.values(normalized).reduce((sum, item) => sum + item.contribution, 0);
+      const signalsUsed = activeEntries.length;
+      const sdi = signalsUsed === 0 ? 50 : clamp(Math.round(50 + 10 * weighted), 0, 100);
+      const confidence = signalsUsed >= 4 ? 'High' : signalsUsed >= 2 ? 'Medium' : 'Low';
+
+      if (outputs.sdi) outputs.sdi.textContent = String(sdi);
+      if (outputs.confidence) outputs.confidence.textContent = `${confidence} confidence`;
+      if (outputs.signalsUsed) outputs.signalsUsed.textContent = `${signalsUsed} signal${signalsUsed === 1 ? '' : 's'} used`;
+      if (outputs.equation) outputs.equation.textContent = `50 + 10 × ${weighted.toFixed(3)} = ${sdi}`;
+
+      ['pvt', 'face', 'kss', 'debt'].forEach((key) => {
+        const item = normalized[key];
+        renderRow(key, item.z, item.weight, item.contribution, item.enabled);
+      });
+
+      const omissions = ['pvt', 'face', 'kss', 'debt'].filter((key) => !raw[key]);
+      const qualityAdjustments = [];
+      if (raw.pvt && precision.pvt < 1) qualityAdjustments.push(`PVT precision is ${(precision.pvt * 100).toFixed(0)}% because this run has ${pvtTrials} trials`);
+      if (raw.face && precision.face < 1) qualityAdjustments.push('the face channel is at 60% precision because full ocular measures are unavailable');
+
+      let note;
+      if (signalsUsed === 0) {
+        note = 'No signal is enabled, so the engine returns the neutral fallback score of 50 with low confidence.';
+      } else if (!omissions.length && !qualityAdjustments.length) {
+        note = 'All four signals are available at full precision, so the base weights remain 40 / 25 / 15 / 20.';
+      } else {
+        const parts = [];
+        if (omissions.length) parts.push(`Missing ${omissions.join(', ')} ${omissions.length === 1 ? 'is' : 'are'} removed, then the remaining weights are renormalized to 100%`);
+        if (qualityAdjustments.length) parts.push(qualityAdjustments.join(' and '));
+        note = `${parts.join('. ')}.`;
+      }
+      if (outputs.note) outputs.note.textContent = note;
+
+      modelInspector.querySelectorAll('.model-preset').forEach((button) => button.classList.remove('active'));
+    };
+
+    const applyPreset = (name) => {
+      const preset = presets[name];
+      if (!preset) return;
+      controls.pvtEnabled.checked = preset.pvtEnabled;
+      controls.pvtZ.value = String(preset.pvtZ);
+      controls.pvtTrials.value = String(preset.pvtTrials);
+      controls.faceEnabled.checked = preset.faceEnabled;
+      controls.faceZ.value = String(preset.faceZ);
+      controls.faceOcular.checked = preset.faceOcular;
+      controls.kssEnabled.checked = preset.kssEnabled;
+      controls.kss.value = String(preset.kss);
+      controls.debtEnabled.checked = preset.debtEnabled;
+      controls.debt.value = String(preset.debt);
+      updateModelInspector();
+      modelInspector.querySelector(`.model-preset[data-preset="${name}"]`)?.classList.add('active');
+    };
+
+    Object.values(controls).forEach((control) => {
+      control?.addEventListener('input', updateModelInspector);
+      control?.addEventListener('change', updateModelInspector);
+    });
+
+    modelInspector.querySelectorAll('.model-preset').forEach((button) => {
+      button.addEventListener('click', () => applyPreset(button.dataset.preset));
+    });
+
+    applyPreset('baseline');
   }
-};
-
-const evidenceConsole = document.querySelector('#evidence-console');
-const evidenceTabs = [...document.querySelectorAll('.evidence-tab')];
-const evidenceCopy = document.querySelector('#evidence-copy');
-const evidenceKicker = document.querySelector('#evidence-kicker');
-const evidenceTitle = document.querySelector('#evidence-title');
-const evidenceBody = document.querySelector('#evidence-body');
-const evidenceFactOne = document.querySelector('#evidence-fact-one');
-const evidenceFactTwo = document.querySelector('#evidence-fact-two');
-const evidenceSource = document.querySelector('#evidence-source');
-const evidenceScopeLabel = document.querySelector('#evidence-scope-label');
-const evidenceScopeValue = document.querySelector('#evidence-scope-value');
-let evidenceIndex = 0;
-let evidenceTimer = null;
-let evidenceHasInteraction = false;
-
-const setEvidence = (key, userInitiated = false) => {
-  const next = evidenceData[key];
-  if (!next) return;
-
-  if (userInitiated) evidenceHasInteraction = true;
-
-  evidenceTabs.forEach((tab, index) => {
-    const active = tab.dataset.evidence === key;
-    tab.classList.toggle('active', active);
-    tab.setAttribute('aria-selected', String(active));
-    if (active) evidenceIndex = index;
-  });
-
-  evidenceCopy?.classList.remove('is-switching');
-  if (evidenceCopy && !reduceMotion) {
-    void evidenceCopy.offsetWidth;
-    evidenceCopy.classList.add('is-switching');
-  }
-
-  if (evidenceKicker) evidenceKicker.textContent = next.kicker;
-  if (evidenceTitle) evidenceTitle.textContent = next.title;
-  if (evidenceBody) evidenceBody.textContent = next.body;
-  if (evidenceFactOne) evidenceFactOne.textContent = next.factOne;
-  if (evidenceFactTwo) evidenceFactTwo.textContent = next.factTwo;
-  if (evidenceSource) evidenceSource.href = next.source;
-  if (evidenceScopeLabel) evidenceScopeLabel.textContent = next.scopeLabel;
-  if (evidenceScopeValue) evidenceScopeValue.textContent = next.scopeValue;
-};
-
-evidenceTabs.forEach((tab) => {
-  tab.addEventListener('click', () => setEvidence(tab.dataset.evidence, true));
-  tab.addEventListener('focus', () => {
-    evidenceHasInteraction = true;
-  });
-});
-
-const startEvidenceCycle = () => {
-  if (reduceMotion || !evidenceConsole || evidenceTimer) return;
-  evidenceTimer = window.setInterval(() => {
-    if (evidenceHasInteraction || document.hidden) return;
-    evidenceIndex = (evidenceIndex + 1) % evidenceTabs.length;
-    setEvidence(evidenceTabs[evidenceIndex]?.dataset.evidence);
-  }, 5200);
-};
-
-if (evidenceConsole && 'IntersectionObserver' in window) {
-  const evidenceObserver = new IntersectionObserver((entries) => {
-    if (entries.some((entry) => entry.isIntersecting)) {
-      startEvidenceCycle();
-      evidenceObserver.disconnect();
-    }
-  }, { threshold: 0.35 });
-  evidenceObserver.observe(evidenceConsole);
-}
-
-if (evidenceConsole && !reduceMotion && window.matchMedia('(pointer:fine)').matches) {
-  const scope = evidenceConsole.querySelector('.evidence-scope');
-  evidenceConsole.addEventListener('pointermove', (event) => {
-    if (!scope) return;
-    const rect = evidenceConsole.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width - 0.5) * 4;
-    const y = ((event.clientY - rect.top) / rect.height - 0.5) * 4;
-    scope.style.transform = `perspective(800px) rotateX(${-y}deg) rotateY(${x}deg)`;
-  });
-  evidenceConsole.addEventListener('pointerleave', () => {
-    if (scope) scope.style.transform = '';
-  });
-}
+})();
 
 const navLinks = document.querySelectorAll('.desktop-nav a[href^="#"], .mobile-nav a[href^="#"]');
 const sections = [...navLinks]
