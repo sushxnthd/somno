@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Schema-only wrapper for the frozen evaluator.
 
-WakeApp calls the session index `time`; the frozen evaluator used the semantic
-name `time_point`. This wrapper maps source-column names only. Scientific rules,
-thresholds, preprocessing, models, and promotion gates remain unchanged.
+WakeApp source columns are mapped to the semantic names expected by the frozen
+Somno evaluator. Scientific rules, thresholds, preprocessing, models, labels,
+and promotion gates remain unchanged.
 """
 import importlib.util
 from pathlib import Path
@@ -14,13 +14,20 @@ m = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(m)
 _original_load = m.load_data
 
+
 def load_with_schema_map():
     att, kss = _original_load()
+    rename = {}
     if 'time_point' not in att.columns and 'time' in att.columns:
-        att = att.rename(columns={'time': 'time_point'})
-    # Preserve the source study's condition name if the export uses `sd`.
+        rename['time'] = 'time_point'
+    if 'trial_nr' not in att.columns and 'order_in_test' in att.columns:
+        rename['order_in_test'] = 'trial_nr'
+    if 'false_response' not in att.columns and 'false_responses' in att.columns:
+        rename['false_responses'] = 'false_response'
     if 'sleep_condition_lag' not in att.columns and 'sd' in att.columns:
-        att = att.rename(columns={'sd': 'sleep_condition_lag'})
+        rename['sd'] = 'sleep_condition_lag'
+    if rename:
+        att = att.rename(columns=rename)
     return att, kss
 
 m.load_data = load_with_schema_map
