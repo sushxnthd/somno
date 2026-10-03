@@ -1,4 +1,4 @@
-name: INSEF Somno Personal Calibration
+name: INSEF Somno Two-Calibration Replication
 
 on:
   push:
@@ -22,12 +22,12 @@ jobs:
           python-version: '3.12'
       - name: Install analysis dependencies
         run: python -m pip install --disable-pip-version-check numpy pandas scikit-learn
-      - name: Run frozen V5 personal-calibration evaluation
-        run: python research/insef-2026/run_wakeapp_personal_calibration_v5.py
-      - name: Upload V5 evidence bundle
+      - name: Run frozen V6 two-calibration replication
+        run: python research/insef-2026/run_wakeapp_two_calibrations_v6.py
+      - name: Upload V6 evidence bundle
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: somno-insef-v5-personal-calibration-results
-          path: research/insef-2026/results_v5/
+          name: somno-insef-v6-two-calibration-results
+          path: research/insef-2026/results_v6/
           if-no-files-found: warn
