@@ -48,3 +48,6 @@ If the gate fails, retain the negative result. N=20 and N=25 are sensitivity ana
 
 ## Claim boundary
 Passing would support a compact within-person vigilance-change detector on this dataset. It would not establish a clinical diagnostic, driving-safety threshold, universal PVT replacement, or prospective validation in Somno users.
+
+## Execution amendment log
+The first workflow attempt stopped before data analysis because the reused frozen parser imports Matplotlib while the new workflow had not installed it. Matplotlib was added as an execution dependency only. No scientific setting, feature, threshold, validation split, model, or promotion criterion changed.
