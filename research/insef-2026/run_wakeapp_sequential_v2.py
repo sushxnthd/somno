@@ -17,13 +17,13 @@ _original_load = m.load_data
 
 def load_with_schema_map():
     att, kss = _original_load()
-    print('WAKEAPP_ATT_COLUMNS:', list(att.columns), flush=True)
-    print('WAKEAPP_KSS_COLUMNS:', list(kss.columns), flush=True)
     rename = {}
     if 'time_point' not in att.columns and 'time' in att.columns:
         rename['time'] = 'time_point'
     if 'trial_nr' not in att.columns and 'order_in_test' in att.columns:
         rename['order_in_test'] = 'trial_nr'
+    if 'trial_type' not in att.columns and 'stimuli_type' in att.columns:
+        rename['stimuli_type'] = 'trial_type'
     if 'false_response' not in att.columns and 'false_responses' in att.columns:
         rename['false_responses'] = 'false_response'
     if 'sleep_condition_lag' not in att.columns and 'sd' in att.columns:
