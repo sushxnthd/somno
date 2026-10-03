@@ -23,7 +23,7 @@ jobs:
       - name: Install analysis dependencies
         run: python -m pip install --disable-pip-version-check numpy pandas scikit-learn matplotlib
       - name: Run frozen WakeApp evaluation
-        run: python research/insef-2026/run_wakeapp_sequential.py
+        run: python research/insef-2026/run_wakeapp_sequential_v2.py
       - name: Upload evidence bundle
         if: always()
         uses: actions/upload-artifact@v4
