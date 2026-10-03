@@ -17,6 +17,8 @@ _original_load = m.load_data
 
 def load_with_schema_map():
     att, kss = _original_load()
+    print('WAKEAPP_ATT_COLUMNS:', list(att.columns), flush=True)
+    print('WAKEAPP_KSS_COLUMNS:', list(kss.columns), flush=True)
     rename = {}
     if 'time_point' not in att.columns and 'time' in att.columns:
         rename['time'] = 'time_point'
