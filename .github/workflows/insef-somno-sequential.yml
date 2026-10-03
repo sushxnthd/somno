@@ -1,4 +1,4 @@
-name: INSEF Somno Consistency-Gated Calibration
+name: INSEF Somno DROZY Index
 
 on:
   push:
@@ -20,14 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install analysis dependencies
-        run: python -m pip install --disable-pip-version-check numpy pandas scikit-learn
-      - name: Run frozen V7 consistency-gated evaluation
-        run: python research/insef-2026/run_wakeapp_consistency_gated_v7.py
-      - name: Upload V7 evidence bundle
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: somno-insef-v7-consistency-gated-results
-          path: research/insef-2026/results_v7/
-          if-no-files-found: warn
+      - name: Install archive dependencies
+        run: python -m pip install --disable-pip-version-check remotezip requests
+      - name: Inspect DROZY archive central directory
+        run: python research/insef-2026/inspect_drozy_remote.py
