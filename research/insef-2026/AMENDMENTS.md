@@ -1,0 +1,11 @@
+# Somno INSEF 2026 — Pre-fit implementation clarifications
+
+These clarifications were fixed after inspecting file schemas but before fitting or scoring the sequential model.
+
+1. **KSS/session alignment.** WakeApp `KSS_data.csv` contains several KSS ratings per session, one before each cognitive task. The primary KSS for a PVT session is the `rating1` value on the `test_type == reactionTime` row. If that task-specific rating is absent, use the within-session median `rating1` and flag the fallback.
+2. **Valid vigilance trials.** Use `trial_type == p`, finite positive `reaction_time`, and exclude rows explicitly marked as false responses. Preserve original `trial_nr` order.
+3. **Personal baseline.** Time point 0 is the participant-specific baseline. A participant enters the primary sequential analysis only if a usable baseline vigilance session and at least one usable follow-up session are present.
+4. **Sequential likelihood.** Work with log reaction time. H0 uses the participant's baseline log-RT mean. H1 shifts that mean by `log(1 + tau)`, where tau is the objective-impairment threshold (0.15 primary). Baseline log-RT dispersion is used for both hypotheses, with a small numerical floor only to prevent division by zero.
+5. **Prior model.** In each subject-held-out fold, fit a regularized logistic model on training participants only using follow-up KSS, KSS change from personal baseline, and log baseline median RT. The resulting probability is clipped to [0.20, 0.80] before it is used as initial prior odds so subjective evidence cannot by itself force a high-confidence objective decision.
+6. **Stopping.** No early decision before 5 valid PVT trials. Candidate posterior boundaries are 0.95, 0.975, and 0.99 (symmetric lower bounds). Boundary choice is made from training participants only, prioritizing >=95% full-session agreement, then lowest false-negative rate, then fewest trials. If no candidate meets the training agreement gate, use 0.99. If no boundary is crossed, the policy abstains from early classification and consumes the full session.
+7. **No outcome editing.** These rules are not changed in response to held-out results. Threshold sensitivity at tau = 0.10, 0.20, and 0.25 is reported separately.
